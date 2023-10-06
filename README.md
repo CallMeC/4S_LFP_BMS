@@ -12,3 +12,5 @@ This BMS is ables to :
 # Software
 This BMS is based on the RP2040, the software is in early stage and not fully functionnal and tested yet.
 Nevertheless, it can communicate to a computer by UART through USB. This way with a small TKINTER python programm we can easily monitor the different cells caracteristics.
+
+![BMS](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/72ab0f5e-a8e1-4a47-b392-04adf977eee5)
