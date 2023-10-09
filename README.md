@@ -2,6 +2,10 @@
 This project was made between feb 2023 and apr 2023, it is still under developpement during my free time
 This BMS is intented to be used with EVE LF105 LFP cells. It goes on top of them, and is attached thanks to screws. The busbar is inside the PCB.
 
+# Capabilities
+The BMS can output up to 200A continuously and 400 peak. I tried to jumpstart a car, it works without problem.
+The output voltage depends on capacity, a connctor was placed in order to add a daughter card to add USB-C power delivery capability.
+
 # Features
 This BMS is ables to :
 - charge / discharge cells independently.
