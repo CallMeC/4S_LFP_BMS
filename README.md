@@ -20,3 +20,34 @@ Nevertheless, it can communicate to a computer by UART through USB. This way wit
 ![BMS](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/72ab0f5e-a8e1-4a47-b392-04adf977eee5)
 ![NEW](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/1208fe64-b45c-4f6f-b602-378c9aea19e5)
 ![ON_CELLS](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/59b917cf-1c63-4b61-be73-1db8412fd798)
+
+# Rev 2
+A new version is currently under developpement. Here are some previews :
+
+![Capture d'écran 2024-02-19 112637](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/953ecdad-eed0-418a-b597-118a0777cbf7)
+![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/76dbcbad-aa51-4397-b71e-6b40d7a2273c)
+![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/298e1745-1c2e-4b97-8dc4-2f3d7fb2bee3)
+![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/ce9d1496-16b1-4a63-81b4-489c1bb8399a)
+
+# License
+MIT License
+
+Copyright (c) 2024 Clément VERDA
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
