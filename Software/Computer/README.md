@@ -1,2 +1,2 @@
 # Computer software
-Currently a short Tkinter python script, soon a beautiful Qt C++ GUI...
+Sources will be availiable soon. A preview executable is already availiable on the root folder.
