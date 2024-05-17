@@ -19,10 +19,19 @@ Nevertheless, it can communicate to a computer by UART through USB. This way we 
 
 # Preview
 ![alt text](https://github.com/CallMeC/4S_LFP_BMS/blob/main/Photos/BMS_GUI_PREVIEW.gif)
+QT C++ Programm to visualise BMS characteristics un real time.
+
 ![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/76dbcbad-aa51-4397-b71e-6b40d7a2273c)
+PCB v2 Preview
+
 ![BMS](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/72ab0f5e-a8e1-4a47-b392-04adf977eee5)
+PCB v1 Preview
+
 ![NEW](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/1208fe64-b45c-4f6f-b602-378c9aea19e5)
+PCB v1 Prototype
+
 ![ON_CELLS](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/59b917cf-1c63-4b61-be73-1db8412fd798)
+PCB v1 Prototype put on cells
 
 # Rev 2
 A new version is currently under developpement. Here are some previews :
