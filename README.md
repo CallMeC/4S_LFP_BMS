@@ -13,6 +13,21 @@ This BMS is ables to :
 - monitor temperature of group of cells
 - monitor current accurately thanks to an inside shunt
 
+# Performance
+The BMS has the following characteristics :
+- 4S Lithium Capability (LiFePO4)
+- 12V Power Output
+- 200A Continuous & 400A Peak current capability
+- 1A Balancing current
+- High accuracy cell voltage measurement
+- Cell temperature measurement
+- High accuracy current measurement
+- Daisy-chaining capability (in case of pack)
+- CAN 2.0 Communication
+- Deep-Sleep mode with auto wake-up capbility
+- Computer monitoring
+- Active balancing extension board
+
 # Software
 This BMS is based on the RP2040, the software is in early stage and not fully functionnal and tested yet.
 Nevertheless, it can communicate to a computer by UART through USB. This way we can easily monitor the different cells caracteristics.
