@@ -27,6 +27,7 @@ The BMS has the following characteristics :
 - Deep-Sleep mode with auto wake-up capbility
 - Computer monitoring
 - Active balancing extension board
+- EEPROM
 
 # Software
 This BMS is based on the RP2040, the software is in early stage and not fully functionnal and tested yet.
