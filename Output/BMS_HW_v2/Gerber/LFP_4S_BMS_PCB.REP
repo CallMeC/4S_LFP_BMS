@@ -1,0 +1,528 @@
+*************************************************************
+FileName = LFP_4S_BMS_PCB.GBR
+AutoAperture = True
+*************************************************************
+Generating : Layer_2
+      File : LFP_4S_BMS_PCB.G2
+
+    Adding Layer      : Layer_2
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D11
+    D14
+    D15
+    D17
+    D20
+    D83
+    D112
+    D119
+    D121
+    D123
+    D124
+*************************************************************
+
+*************************************************************
+Generating : Bottom_Layer
+      File : LFP_4S_BMS_PCB.GBL
+
+    Adding Layer      : Bottom_Layer
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D11
+    D14
+    D15
+    D17
+    D20
+    D80
+    D82
+    D83
+    D84
+    D85
+    D91
+    D111
+    D112
+    D114
+    D118
+    D119
+    D120
+    D121
+    D122
+    D123
+    D124
+*************************************************************
+
+*************************************************************
+Generating : Bottom Pad Master
+      File : LFP_4S_BMS_PCB.GPB
+
+    Adding Layer      : Bottom_Layer
+
+    Adding Layer      : Multi-Layer
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+
+Used DCodes :
+    D20
+    D80
+    D82
+    D83
+    D84
+    D85
+    D91
+    D118
+    D119
+    D120
+    D121
+    D122
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : LFP_4S_BMS_PCB.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Bottom_Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D20
+    D80
+    D81
+    D82
+    D83
+    D84
+    D85
+    D86
+    D87
+    D88
+    D89
+    D90
+    D91
+    D92
+*************************************************************
+
+*************************************************************
+Generating : Bottom Paste
+      File : LFP_4S_BMS_PCB.GBP
+
+    Adding Layer      : Bottom Paste
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Bottom_Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D20
+*************************************************************
+
+*************************************************************
+Generating : Bottom Overlay
+      File : LFP_4S_BMS_PCB.GBO
+
+    Adding Layer      : Bottom Overlay
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+
+Used DCodes :
+    D20
+*************************************************************
+
+*************************************************************
+Generating : Layer_1
+      File : LFP_4S_BMS_PCB.G1
+
+    Adding Layer      : Layer_1
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D11
+    D15
+    D20
+    D80
+    D82
+    D83
+    D84
+    D111
+    D112
+    D119
+    D123
+    D124
+*************************************************************
+
+*************************************************************
+Generating : Top_Layer
+      File : LFP_4S_BMS_PCB.GTL
+
+    Adding Layer      : Top_Layer
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D11
+    D12
+    D14
+    D15
+    D17
+    D20
+    D24
+    D26
+    D27
+    D28
+    D29
+    D32
+    D35
+    D41
+    D42
+    D44
+    D46
+    D47
+    D52
+    D54
+    D55
+    D58
+    D59
+    D60
+    D73
+    D75
+    D80
+    D82
+    D83
+    D84
+    D85
+    D91
+    D93
+    D94
+    D95
+    D96
+    D97
+    D98
+    D99
+    D100
+    D101
+    D102
+    D103
+    D104
+    D105
+    D106
+    D107
+    D108
+    D109
+    D110
+    D111
+    D112
+    D113
+    D114
+    D115
+    D116
+    D117
+    D118
+    D119
+    D120
+    D121
+    D122
+    D123
+*************************************************************
+
+*************************************************************
+Generating : Top Pad Master
+      File : LFP_4S_BMS_PCB.GPT
+
+    Adding Layer      : Top_Layer
+
+    Adding Layer      : Multi-Layer
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+
+Used DCodes :
+    D20
+    D24
+    D26
+    D27
+    D28
+    D29
+    D32
+    D35
+    D41
+    D42
+    D44
+    D46
+    D47
+    D52
+    D54
+    D55
+    D58
+    D59
+    D60
+    D73
+    D75
+    D80
+    D82
+    D83
+    D84
+    D85
+    D91
+    D93
+    D94
+    D95
+    D96
+    D97
+    D98
+    D99
+    D100
+    D101
+    D102
+    D103
+    D104
+    D105
+    D106
+    D107
+    D108
+    D109
+    D110
+    D118
+    D119
+    D120
+    D121
+    D122
+*************************************************************
+
+*************************************************************
+Generating : Top Overlay
+      File : LFP_4S_BMS_PCB.GTO
+
+    Adding Layer      : Top Overlay
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+
+Used DCodes :
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
+    D16
+    D17
+    D18
+    D19
+    D20
+*************************************************************
+
+*************************************************************
+Generating : Top Paste
+      File : LFP_4S_BMS_PCB.GTP
+
+    Adding Layer      : Top Paste
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Top_Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D20
+    D21
+    D22
+    D23
+    D24
+    D25
+    D26
+    D27
+    D28
+    D29
+    D30
+    D31
+    D32
+    D33
+    D34
+    D35
+    D36
+    D37
+    D38
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+    D45
+    D46
+    D47
+    D48
+    D49
+    D50
+    D51
+    D52
+    D53
+    D54
+    D55
+    D56
+    D57
+    D58
+    D59
+    D60
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : LFP_4S_BMS_PCB.GTS
+
+    Adding Layer      : Top Solder
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Layer      : Top_Layer
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D20
+    D24
+    D26
+    D27
+    D28
+    D29
+    D32
+    D34
+    D35
+    D41
+    D42
+    D44
+    D46
+    D47
+    D48
+    D49
+    D51
+    D52
+    D54
+    D55
+    D58
+    D59
+    D60
+    D61
+    D62
+    D63
+    D64
+    D65
+    D66
+    D67
+    D68
+    D69
+    D70
+    D71
+    D72
+    D73
+    D74
+    D75
+    D76
+    D77
+    D78
+    D79
+    D80
+    D81
+    D82
+    D83
+    D84
+    D85
+    D86
+    D87
+    D88
+    D89
+    D90
+    D91
+    D92
+*************************************************************
+
+*************************************************************
+Generating : Drill Drawing
+      File : LFP_4S_BMS_PCB.GD1
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Drill Pair : Top_Layer-Bottom_Layer
+
+    Adding Layer      : Drill Drawing
+
+
+Used DCodes :
+    D16
+    D20
+    D125
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : LFP_4S_BMS_PCB.GG1
+
+    Adding Layer      : Board
+
+    Adding Layer      : Top Designator
+
+    Adding Drill Pair : Top_Layer-Bottom_Layer
+
+    Adding Layer      : Drill Guide
+
+
+Used DCodes :
+    D16
+    D20
+*************************************************************
+

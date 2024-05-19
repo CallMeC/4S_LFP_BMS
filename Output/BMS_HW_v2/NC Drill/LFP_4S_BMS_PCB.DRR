@@ -1,0 +1,22 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: LFP_4S_BMS_PCB.PcbDoc   19/05/2024  10:08:45
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : Top_Layer to Bottom_Layer
+ASCII RoundHoles File : LFP_4S_BMS_PCB.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      12mil (0.305mm)                                           Round             342       PTH        64.09inch (1627.88mm)
+T2      35mil (0.889mm)                                           Round             3         PTH        0.20inch (5.08mm)
+T3      39mil (1.001mm)                                           Round             5         PTH        0.40inch (10.16mm)
+T4      40mil (1.021mm)                                           Round             4         PTH        0.30inch (7.62mm)
+T5      47mil (1.191mm)                                           Round             2         PTH        0.10inch (2.54mm)
+T6      51mil (1.3mm)                                             Round             8         PTH        6.01inch (152.63mm)
+T7      142mil (3.599mm)                                          Round             4         PTH        6.60inch (167.63mm)
+T8      256mil (6.5mm)                                            Round             10        PTH        16.97inch (431.10mm)
+T9      43mil (1.1mm)                                             Round             2         NPTH       0.17inch (4.40mm)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              380
+
+Total Processing Time (hh:mm:ss) : 00:00:00
