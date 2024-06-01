@@ -4,31 +4,31 @@
 
 c_battStats::c_battStats()
 {
-    SoCCell1 = 0;
-    SoCCell2 = 0;
-    SoCCell3 = 0;
-    SoCCell4 = 0;
+    Cell0.SoC = 0;
+    Cell1.SoC = 0;
+    Cell2.SoC = 0;
+    Cell3.SoC = 0;
     SoCCellMax = 0;
     SoCCellMin = 0;
 
-    SoHCell1 = 0;
-    SoHCell2 = 0;
-    SoHCell3 = 0;
-    SoHCell4 = 0;
+    Cell0.SoH = 0;
+    Cell1.SoH = 0;
+    Cell2.SoH = 0;
+    Cell3.SoH = 0;
     SoHCellMax = 0;
     SoHCellMin = 0;
 
-    VCell1 = 0;
-    VCell2 = 0;
-    VCell3 = 0;
-    VCell4 = 0;
+    Cell0.Voltage = 0;
+    Cell1.Voltage = 0;
+    Cell2.Voltage = 0;
+    Cell3.Voltage = 0;
     VCellMax = 0;
     VCellMin = 0;
 
-    TCell1 = 0;
-    TCell2 = 0;
-    TCell3 = 0;
-    TCell4 = 0;
+    Cell0.Temperature = 0;
+    Cell1.Temperature = 0;
+    Cell2.Temperature = 0;
+    Cell3.Temperature = 0;
     TCellMax = 0;
     TCellMin = 0;
 
@@ -51,42 +51,45 @@ void c_battStats::randomVal()
 {
     srand (time(NULL));
 
-    VCell1 = randomVoltage();
-    VCell2 = randomVoltage();
-    VCell3 = randomVoltage();
-    VCell4 = randomVoltage();
+    Cell0.Voltage = randomVoltage();
+    Cell1.Voltage = randomVoltage();
+    Cell2.Voltage = randomVoltage();
+    Cell3.Voltage = randomVoltage();
     VCellMax = 2;
     VCellMin = 4;
-    TCell1 = randomTemp();
-    TCell2 = randomTemp();
-    TCell3 = randomTemp();
-    TCell4 = randomTemp();
+    Cell0.Temperature = randomTemp();
+    Cell1.Temperature = randomTemp();
+    Cell2.Temperature = randomTemp();
+    Cell3.Temperature = randomTemp();
     TCellMax = 2;
     TCellMin = 3;
-    SoCCell1 = randomSoC();
-    SoCCell2 = randomSoC();
-    SoCCell3 = randomSoC();
-    SoCCell4 = randomSoC();
+    Cell0.SoC = randomSoC();
+    Cell1.SoC = randomSoC();
+    Cell2.SoC = randomSoC();
+    Cell3.SoC = randomSoC();
     SoCCellMax = 2;
     SoCCellMin = 4;
-    SoHCell1 = randomSoH();
-    SoHCell2 = randomSoH();
-    SoHCell3 = randomSoH();
-    SoHCell4 = randomSoH();
+    Cell0.SoH = randomSoH();
+    Cell1.SoH = randomSoH();
+    Cell2.SoH = randomSoH();
+    Cell3.SoH = randomSoH();
     SoHCellMax = 1;
     SoHCellMin = 2;
     IShunt = randomCurrent();
-    VPack = VCell1 + VCell2 + VCell3 + VCell4;
-    SoCPack = min(min(SoCCell1, SoCCell2), min(SoCCell3, SoCCell4));
-    SoHPack = min(min(SoHCell1, SoHCell2), min(SoHCell3, SoHCell4));
+    VPack = Cell0.Voltage + Cell1.Voltage + Cell2.Voltage + Cell3.Voltage;
+    SoCPack = min(min(Cell0.SoC, Cell1.SoC), min(Cell2.SoC, Cell3.SoC));
+    SoHPack = min(min(Cell0.SoH, Cell1.SoH), min(Cell2.SoH, Cell3.SoH));
+
 }
 
 void c_battStats::displayVal()
 {
+    //Cell0.displayCell();
+    
     printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
-                  VCell1, VCell2, VCell3, VCell4, VCellMax, VCellMin, TCell1, TCell2, TCell3, TCell4,
-                  TCellMax, TCellMin, SoCCell1, SoCCell2, SoCCell3, SoCCell4, SoCCellMax, SoCCellMin,
-                  SoHCell1, SoHCell2, SoHCell3, SoHCell4, SoHCellMax, SoHCellMin, VPack, IShunt, SoCPack,
+                  Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage, VCellMax, VCellMin, Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature,
+                  TCellMax, TCellMin, Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC, SoCCellMax, SoCCellMin,
+                  Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH, SoHCellMax, SoHCellMin, VPack, IShunt, SoCPack,
                   SoHPack, alarmN1, alarmN2, alarmN3, calibrationShuntValue);
     //printf("\n",BigStr);
 

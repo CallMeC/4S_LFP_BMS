@@ -3,16 +3,17 @@
 
 #include "pico/stdlib.h"
 #include <stdio.h>
-
+#include "cell.h"
 
 #define MAX_IN_LENGTH 8
+#define CELLS_NUMBER 4  //4S BMS
 
 
 class c_battStats
 {
     public:
-        c_battStats();
 
+        c_battStats();
         void randomVal();
         void displayVal();
 
@@ -21,33 +22,32 @@ class c_battStats
         uint16_t randomSoC();
         uint16_t randomSoH();
         uint16_t randomTemp();
+
         void commandParser(uint8_t command[MAX_IN_LENGTH]);       
 
-        uint16_t SoCCell1;
-        uint16_t SoCCell2;
-        uint16_t SoCCell3;
-        uint16_t SoCCell4;
+        #if CELLS_NUMBER == 4
+            c_Cell Cell0;
+            c_Cell Cell1;
+            c_Cell Cell2;
+            c_Cell Cell3;
+        #elif CELLS_NUMBER == 6
+            c_Cell Cell0;
+            c_Cell Cell1;
+            c_Cell Cell2;
+            c_Cell Cell3;
+            c_Cell Cell4;
+            c_Cell Cell5;
+        #endif
+
         uint8_t SoCCellMax;
         uint8_t SoCCellMin;
 
-        uint16_t SoHCell1;
-        uint16_t SoHCell2;
-        uint16_t SoHCell3;
-        uint16_t SoHCell4;
         uint8_t SoHCellMax;
         uint8_t SoHCellMin;
 
-        uint16_t VCell1;
-        uint16_t VCell2;
-        uint16_t VCell3;
-        uint16_t VCell4;
         uint8_t VCellMax;
         uint8_t VCellMin;
 
-        uint16_t TCell1;
-        uint16_t TCell2;
-        uint16_t TCell3;
-        uint16_t TCell4;
         uint8_t TCellMax;
         uint8_t TCellMin;
 
