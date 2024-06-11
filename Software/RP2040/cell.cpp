@@ -2,6 +2,9 @@
 
 #include "pico/stdlib.h"
 #include <stdio.h>
+#include <iostream>
+#include <vector>
+#include "appVariable.h"
 
 c_Cell::c_Cell()
 {
@@ -11,6 +14,9 @@ c_Cell::c_Cell()
     Temperature                 = 0;            //Dummy Value, to be grabbed from the EEPROM
     CyclesCpt                   = 45;           //Dummy Value, to be grabbed from the EEPROM
     operatingArea               = ZONE_GREEN;   //Dummy Value, to be grabbed from the EEPROM
+    IMR                         = 0;
+    IMC                         = 0;
+    IMD                         = 0;
 
     overTemperatureBlackOn      = false;
     underTemperatureBlackOn     = false;
@@ -158,6 +164,7 @@ void c_Cell::checkCell()
 
 void c_Cell::displayCell()
 {
+    IMDRCcheck();
     printf("\n----CELL--DISPLAY----\n");
     printf("SoC : %u %\n", SoC);
     printf("SoH : %u %\n", SoH);
@@ -168,4 +175,71 @@ void c_Cell::displayCell()
     printf("Alarms : [%u, %u, %u, %u, %u, %u, %u, %u, %u, %u, %u, %u]\n", alarms[0], alarms[1],alarms[2], alarms[3], alarms[4],
                                                                          alarms[5], alarms[6], alarms[7], alarms[8], alarms[9],
                                                                          alarms[10], alarms[11]);
+    printf("IMD : %u\n", IMD);
+    printf("IMR : %u\n", IMR);
+    printf("IMC : %u\n", IMC);
+}
+
+void c_Cell::IMDRCcheck()
+{
+    std::vector<float> f_Map_IMD_Soc_TMax =
+    {
+        // [x] : Soc
+        // [y] : T Cell Max
+        0,          0.0,   10.0,   40.0,   50.0,   60.0,   100.0,
+        //--------------------------------------------------
+        -20.0, /**/ 11.0,   11.0,   11.0,   21.0,   21.0,    21.0, 
+        -10.0, /**/ 11.0,   21.0,   21.0,   40.0,   53.0,    53.0, 
+          0.0, /**/ 21.0,   21.0,   40.0,   53.0,  105.0,   105.0,  
+         10.0, /**/ 40.0,   53.0,   53.0,  105.0,  210.0,   210.0,  
+         25.0, /**/ 40.0,  105.0,  210.0,  210.0,  210.0,   210.0,  
+         40.0, /**/ 40.0,  105.0,  210.0,  210.0,  210.0,   210.0,  
+         50.0, /**/ 21.0,   53.0,  105.0,  105.0,  105.0,   105.0,  
+         55.0, /**/ 21.0,   21.0,   21.0,   21.0,   21.0,    21.0,  
+    };
+
+    std::vector<float> f_Map_IMC_Soc_TMax =
+    {
+        // [x] : Soc
+        // [y] : T.Cell Max
+        //
+        0,       0.0,    5.0,   50.0,  90.0,   100.0,
+        //-------------------------------------------
+        0,  /**/ 1.0,    1.0,    1.0,    1.0,    1.0,
+        10, /**/ 21.0,   21.0,   21.0,   21.0,   21.0,
+        15, /**/ 53.0,   53.0,   53.0,   53.0,   53.0,
+        45, /**/ 53.0,   53.0,   53.0,   53.0,   53.0,
+        50, /**/ 21.0,   21.0,   21.0,   21.0,   21.0,
+        54, /**/ 11.0,   11.0,   11.0,   11.0,   11.0,
+        55, /**/  0.0,    0.0,    0.0,    0.0,    0.0,
+    };
+
+    std::vector<float> f_Map_IMR_Soc_TMax =
+    {
+        // [x] : Soc
+        // [y] : T.Cell Moy
+        //
+        0,         0.0,   10.0,   50.0,  90.0,    95.0,   100.0,
+        //------------------------------------------------------
+        0,  /**/   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+        10, /**/ 105.0,  105.0,  105.0,   53.0,   21.0,   21.0,
+        25, /**/ 105.0,  105.0,  105.0,  105.0,  105.0,   53.0,
+        45, /**/ 105.0,  105.0,  105.0,  105.0,   53.0,   53.0,
+        50, /**/  53.0,   53.0,   53.0,   53.0,   21.0,   21.0,
+        55, /**/   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+    };
+
+    float x = SoC/10;
+    float y = DEG_C_TO_TEMP(Temperature);
+    int numRows = 9; // Number of rows including the first T Cell Max row
+    int numCols = 7; // Number of columns including the first SoC column
+    IMD = (uint16_t) SysCore.getInterpolatedValue(f_Map_IMD_Soc_TMax, numRows, numCols, x, y);
+
+    numRows = 7; // Number of rows including the first T Cell Max row
+    numCols = 5; // Number of columns including the first SoC column
+    IMC = (uint16_t) SysCore.getInterpolatedValue(f_Map_IMC_Soc_TMax, numRows, numCols, x, y);
+
+    numRows = 6; // Number of rows including the first T Cell Max row
+    numCols = 6; // Number of columns including the first SoC column
+    IMR = (uint16_t) SysCore.getInterpolatedValue(f_Map_IMR_Soc_TMax, numRows, numCols, x, y);
 }

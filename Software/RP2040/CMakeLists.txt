@@ -10,7 +10,9 @@ pico_sdk_init()
 
 set(TARGET_NAME BMS_Firmware)
 
-add_executable(${TARGET_NAME} main.cpp IO_Manager.cpp uartHandler.cpp I2C.cpp MCP3424.cpp battStats.cpp flashManager.cpp faultsManager.cpp cell.cpp)
+add_executable(${TARGET_NAME} main.cpp IO_Manager.cpp uartHandler.cpp I2C.cpp
+                              MCP3424.cpp battStats.cpp flashManager.cpp faultsManager.cpp
+                              cell.cpp systemCore.cpp)
 
 target_link_libraries(${TARGET_NAME}
         pico_stdlib

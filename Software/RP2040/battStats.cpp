@@ -84,14 +84,14 @@ void c_battStats::randomVal()
 
 void c_battStats::displayVal()
 {
-    //Cell0.displayCell();
+    Cell0.displayCell();
     
-    printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
+    /*printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
                   Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage, VCellMax, VCellMin, Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature,
                   TCellMax, TCellMin, Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC, SoCCellMax, SoCCellMin,
                   Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH, SoHCellMax, SoHCellMin, VPack, IShunt, SoCPack,
                   SoHPack, alarmN1, alarmN2, alarmN3, calibrationShuntValue);
-    //printf("\n",BigStr);
+    //printf("\n",BigStr);*/
 
 }
 

@@ -34,12 +34,15 @@ class c_Cell
     public :
         c_Cell();
 
-        uint16_t SoC;           //%
-        uint16_t SoH;           //%
+        uint16_t SoC;           //% (*10)
+        uint16_t SoH;           //% (*10)
         uint16_t Voltage;       //mV
         uint16_t Temperature;   //°C
         uint16_t CyclesCpt;     //N.A
         uint8_t  operatingArea;
+        uint16_t IMD;           //A Maximum Dynamic Discharge Current
+        uint16_t IMR;           //A Maximum Dynamic Regeneration Current
+        uint16_t IMC;           //A Maximum Dynamic Charge Current
 
         bool overTemperatureBlackOn;
         bool underTemperatureBlackOn;
@@ -60,6 +63,7 @@ class c_Cell
         bool setBypassState(bool bypassState);
         void checkCell();
         void displayCell();
+        void IMDRCcheck();
 };
 
 #endif

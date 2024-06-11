@@ -12,6 +12,7 @@
 #include "battStats.h"
 #include "flashManager.h"
 #include "faultsManager.h"
+#include "systemCore.h"
 
 #define SYS_VERS_MAJEUR         0
 #define SYS_VERS_MINEUR         1   // 0 à 99
@@ -54,3 +55,6 @@ EXT_APP_DATA c_FlashManager FMGR_NAME;
 
 //Faults Manager
 EXT_APP_DATA c_faultsManager FAULTS_MGR;
+
+//System Core
+EXT_APP_DATA c_SystemCore SysCore;
