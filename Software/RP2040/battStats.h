@@ -5,8 +5,11 @@
 #include <stdio.h>
 #include "cell.h"
 
-#define MAX_IN_LENGTH 8
-#define CELLS_NUMBER 4  //4S BMS
+#define MAX_IN_LENGTH   8
+#define CELLS_NUMBER    4   //4S BMS
+#define IMD_MAX         210 //A
+#define IMC_MAX         53  //A
+#define IMR_MAX         105 //A
 
 
 class c_battStats
@@ -16,6 +19,8 @@ class c_battStats
         c_battStats();
         void randomVal();
         void displayVal();
+        void sendGUIVal();
+        void synthesisPack();
 
         uint16_t randomVoltage();
         uint16_t randomCurrent();
@@ -53,9 +58,18 @@ class c_battStats
 
         uint16_t calibrationShuntValue;
         uint16_t IShunt;
-        uint16_t VPack;
-        uint16_t SoCPack;
-        uint16_t SoHPack;
+        uint16_t V_Pack;
+        uint16_t SoC_Pack;
+        uint16_t SoH_Pack;
+        uint16_t IMD_Pack;
+        uint16_t IMC_Pack;
+        uint16_t IMR_Pack;
+        uint16_t T_Max_Pack;
+        uint16_t T_Min_Pack;
+        uint16_t V_Max_Pack;
+        uint16_t V_Min_Pack;
+        uint8_t  operatingArea_Pack;
+
         uint32_t SerialNumber;
 
         uint8_t alarmN1;
@@ -69,6 +83,7 @@ class c_battStats
     
     private:
         uint16_t min(uint16_t a, uint16_t b);
+        uint16_t max(uint16_t a, uint16_t b);
 };
 
 #endif

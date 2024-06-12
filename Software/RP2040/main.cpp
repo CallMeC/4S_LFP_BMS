@@ -27,9 +27,12 @@ int main()
 bool timer_callback(repeating_timer_t *rt)
 {
     IOManager.callBack();
-    BATTSTAT0.randomVal();
-    BATTSTAT0.displayVal();
-    
+    BATTSTAT.randomVal();
+    BATTSTAT.synthesisPack();
+    //BATTSTAT.displayVal();
+    BATTSTAT.sendGUIVal();
+
+
     /* // Read flash procedure
     PARAM_FLASH_0 = 0;
     PARAM_FLASH_1 = 0;

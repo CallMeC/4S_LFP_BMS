@@ -47,7 +47,7 @@ EXT_APP_DATA c_I2C I2C_0;
 EXT_APP_DATA c_MCP3424 ADC_0;
 
 //Batt Stats
-EXT_APP_DATA c_battStats BATTSTAT0;
+EXT_APP_DATA c_battStats BATTSTAT;
 
 //Flash Manager
 #define FMGR_NAME FLASHMGR

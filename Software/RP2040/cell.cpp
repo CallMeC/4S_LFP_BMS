@@ -32,10 +32,18 @@ c_Cell::c_Cell()
     overVoltageYellowOn         = false;
     underVoltageYellowOn        = false;
 
-    alarms[0] = overTemperatureBlackOn; alarms[1] = underTemperatureBlackOn; alarms[2] = overTemperatureRedOn;
-    alarms[3] = underTemperatureRedOn; alarms[4] = overTemperatureYellowOn; alarms[5] = underTemperatureYellowOn;
-    alarms[6] = overVoltageBlackOn; alarms[7] = underVoltageBlackOn; alarms[8] = overVoltageRedOn;
-    alarms[9] = underVoltageRedOn; alarms[10] = overVoltageYellowOn; alarms[11] = underVoltageYellowOn;
+    alarmsMask = (overTemperatureBlackOn      << 0)  |
+                 (underTemperatureBlackOn     << 1)  |
+                 (overTemperatureRedOn        << 2)  |
+                 (underTemperatureRedOn       << 3)  |
+                 (overTemperatureYellowOn     << 4)  |
+                 (underTemperatureYellowOn    << 5)  |
+                 (overVoltageBlackOn          << 6)  |
+                 (underVoltageBlackOn         << 7)  |
+                 (overVoltageRedOn            << 8)  |
+                 (underVoltageRedOn           << 9)  |
+                 (overVoltageYellowOn         << 10) |
+                 (underVoltageYellowOn        << 11);
 }
 
 bool c_Cell::setBypassState(bool bypassState)
@@ -45,6 +53,7 @@ bool c_Cell::setBypassState(bool bypassState)
 
 void c_Cell::checkCell()
 {
+    IMDRCcheck();
     //Voltage Check
     if (Voltage > RED_VOLTAGE_HIGH)
     {
@@ -160,11 +169,23 @@ void c_Cell::checkCell()
         overTemperatureRedOn = true;
         overTemperatureYellowOn = true;
     }
+
+    alarmsMask = (overTemperatureBlackOn      << 0)  |
+                 (underTemperatureBlackOn     << 1)  |
+                 (overTemperatureRedOn        << 2)  |
+                 (underTemperatureRedOn       << 3)  |
+                 (overTemperatureYellowOn     << 4)  |
+                 (underTemperatureYellowOn    << 5)  |
+                 (overVoltageBlackOn          << 6)  |
+                 (underVoltageBlackOn         << 7)  |
+                 (overVoltageRedOn            << 8)  |
+                 (underVoltageRedOn           << 9)  |
+                 (overVoltageYellowOn         << 10) |
+                 (underVoltageYellowOn        << 11);
 }
 
 void c_Cell::displayCell()
 {
-    IMDRCcheck();
     printf("\n----CELL--DISPLAY----\n");
     printf("SoC : %u %\n", SoC);
     printf("SoH : %u %\n", SoH);
@@ -172,9 +193,7 @@ void c_Cell::displayCell()
     printf("Temperature : %u °C\n", DEG_C_TO_TEMP(Temperature));
     printf("CyclesCpt : %u\n", CyclesCpt);
     printf("operatingArea : %u\n", operatingArea);
-    printf("Alarms : [%u, %u, %u, %u, %u, %u, %u, %u, %u, %u, %u, %u]\n", alarms[0], alarms[1],alarms[2], alarms[3], alarms[4],
-                                                                         alarms[5], alarms[6], alarms[7], alarms[8], alarms[9],
-                                                                         alarms[10], alarms[11]);
+    printf("Alarms : %08X\n", alarmsMask);
     printf("IMD : %u\n", IMD);
     printf("IMR : %u\n", IMR);
     printf("IMC : %u\n", IMC);

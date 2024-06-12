@@ -59,6 +59,7 @@ class c_Cell
         bool underVoltageYellowOn;
 
         bool alarms[12];
+        uint32_t alarmsMask;
 
         bool setBypassState(bool bypassState);
         void checkCell();
