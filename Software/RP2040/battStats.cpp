@@ -45,6 +45,7 @@ c_battStats::c_battStats()
     V_Max_Pack = 0;
     V_Min_Pack = 0;
     operatingArea_Pack = ZONE_GREEN;
+    state = c_Cell::CellState::OFF;
     SerialNumber = 0x12345678;
     char BigStr[100];
 
@@ -96,6 +97,11 @@ void c_battStats::randomVal()
 
 void c_battStats::synthesisPack()
 {
+  Cell0.setState(c_Cell::CellState::DISCHARGE);
+  Cell1.setState(c_Cell::CellState::DISCHARGE);
+  Cell2.setState(c_Cell::CellState::DISCHARGE);
+  Cell3.setState(c_Cell::CellState::DISCHARGE);
+
   Cell0.checkCell();
   Cell1.checkCell();
   Cell2.checkCell();
@@ -109,17 +115,15 @@ void c_battStats::synthesisPack()
   IMD_Pack = min(min(Cell0.IMD, Cell1.IMD), min(Cell2.IMD, Cell3.IMD));
   IMR_Pack = min(min(Cell0.IMR, Cell1.IMR), min(Cell2.IMR, Cell3.IMR));
   IMC_Pack = min(min(Cell0.IMC, Cell1.IMC), min(Cell2.IMC, Cell3.IMC));
+
+  if ((Cell0.getState() == Cell1.getState()) && (Cell1.getState() == Cell2.getState()) && (Cell2.getState() == Cell3.getState()))
+    state = Cell0.getState();
+  else
+    state = c_Cell::CellState::OFF;
 }
 
 void c_battStats::displayVal()
 {    
-    /*printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
-                  Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage, VCellMax, VCellMin, Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature,
-                  TCellMax, TCellMin, Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC, SoCCellMax, SoCCellMin,
-                  Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH, SoHCellMax, SoHCellMin, VPack, IShunt, SoCPack,
-                  SoHPack, alarmN1, alarmN2, alarmN3, calibrationShuntValue);
-    //printf("\n",BigStr);*/
-
     printf("\n----Pack--DISPLAY----\n");
     printf("SoC : %u %%\n", SoC_Pack/10);
     printf("SoH : %u %%\n", SoH_Pack/10);
@@ -128,6 +132,7 @@ void c_battStats::displayVal()
     printf("Cells Temperatures : Max %.1f °C | Min %.1f °C\n", (float)DEG_C_TO_TEMP(T_Max_Pack), (float)DEG_C_TO_TEMP(T_Min_Pack));
     printf("Cells Voltages : Max %.3f V | Min %.3f V\n", (float)V_Max_Pack/1000, (float)V_Min_Pack/1000);
     printf("operatingArea : %u\n", operatingArea_Pack);
+    printf("Pack State : %s\n", getStateString());
 
     /*printf("Alarms C0 : %08X\n", Cell0.alarmsMask);   //Slows down printing if enabled
     printf("Alarms C1 : %08X\n", Cell1.alarmsMask);
@@ -136,18 +141,23 @@ void c_battStats::displayVal()
 
     printf("Pack Alarms %02X %02X %02X\n", alarmN1, alarmN2, alarmN3);
 
-    printf("IMD : %u\n", IMD_Pack);
-    printf("IMR : %u\n", IMR_Pack);
+    printf("IMD : %u ", IMD_Pack);
+    printf("IMR : %u ", IMR_Pack);
     printf("IMC : %u\n", IMC_Pack);
 }
 
 void c_battStats::sendGUIVal()
 {    
-  printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
+  uint8_t stateValue = 0;
+  if (state == c_Cell::CellState::CHARGE) stateValue = 1;
+  if (state == c_Cell::CellState::DISCHARGE) stateValue = 2;
+  if (state == c_Cell::CellState::STORAGE) stateValue = 3;
+
+  printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
           Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage, VCellMax, VCellMin, Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature,
           TCellMax, TCellMin, Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC, SoCCellMax, SoCCellMin,
           Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH, SoHCellMax, SoHCellMin, V_Pack, IShunt, SoC_Pack,
-          SoH_Pack, alarmN1, alarmN2, alarmN3, calibrationShuntValue, IMD_Pack, IMR_Pack, IMC_Pack);
+          SoH_Pack, alarmN1, alarmN2, alarmN3, calibrationShuntValue, IMD_Pack, IMR_Pack, IMC_Pack, stateValue);
 }
 
 uint16_t c_battStats::randomVoltage()  //Range 2500-3650
@@ -185,4 +195,22 @@ uint16_t c_battStats::max(uint16_t a, uint16_t b)
 {
     if (a > b) return a;
     return b;
+}
+
+// Get the state of the cell as a string
+const char* c_battStats::getStateString() const
+{
+    switch (state)
+    {
+        case c_Cell::CellState::OFF:
+            return "OFF";
+        case c_Cell::CellState::CHARGE:
+            return "CHARGE";
+        case c_Cell::CellState::DISCHARGE:
+            return "DISCHARGE";
+        case c_Cell::CellState::STORAGE:
+            return "STORAGE";
+        default:
+            return "UNKNOWN";
+    }
 }

@@ -18,6 +18,8 @@ c_Cell::c_Cell()
     IMC                         = 0;
     IMD                         = 0;
 
+    state                       = OFF;
+
     overTemperatureBlackOn      = false;
     underTemperatureBlackOn     = false;
     overTemperatureRedOn        = false;
@@ -55,120 +57,13 @@ void c_Cell::checkCell()
 {
     IMDRCcheck();
     //Voltage Check
-    if (Voltage > RED_VOLTAGE_HIGH)
-    {
-        operatingArea = ZONE_BLACK;
-        overVoltageBlackOn = true;
-        overVoltageRedOn = true;
-        overVoltageYellowOn = true;
-    }
-    else if (Voltage > YELLOW_VOLTAGE_HIGH)
-    {
-        operatingArea = ZONE_RED;
-        overVoltageBlackOn = false;
-        overVoltageRedOn = true;
-        overVoltageYellowOn = true;
-    }
-    else if (Voltage > GREEN_VOLTAGE_HIGH)
-    {
-        operatingArea = ZONE_YELLOW;
-        overVoltageBlackOn = false;
-        overVoltageRedOn = false;
-        overVoltageYellowOn = true;
-    }
-    else if (Voltage > GREEN_VOLTAGE_LOW)
-    {
-        operatingArea = ZONE_GREEN;
-        overVoltageBlackOn = false;
-        overVoltageRedOn = false;
-        overVoltageYellowOn = false;
-    }
-    else if (Voltage > YELLOW_VOLTAGE_LOW)
-    {
-        operatingArea = ZONE_YELLOW;
-        overVoltageBlackOn = false;
-        overVoltageRedOn = false;
-        overVoltageYellowOn = true;
-    }
-    else if (Voltage > RED_VOLTAGE_LOW)
-    {
-        operatingArea = ZONE_RED;
-        overVoltageBlackOn = false;
-        overVoltageRedOn = true;
-        overVoltageYellowOn = true;
-    }
-    else if (Voltage < RED_VOLTAGE_LOW)
-    {
-        operatingArea = ZONE_BLACK;
-        overVoltageBlackOn = true;
-        overVoltageRedOn = true;
-        overVoltageYellowOn = true;
-    }
-    else
-    {
-        operatingArea = ZONE_BLACK;
-        overVoltageBlackOn = true;
-        overVoltageRedOn = true;
-        overVoltageYellowOn = true;
-    }
-
-    //Temperature Check
-    if (Temperature > DEG_C_TO_TEMP(RED_TEMP_HIGH))
-    {
-        operatingArea = ZONE_BLACK;
-        overTemperatureBlackOn = true;
-        overTemperatureRedOn = true;
-        overTemperatureYellowOn = true;
-    }
-    else if (Temperature > DEG_C_TO_TEMP(YELLOW_TEMP_HIGH))
-    {
-        operatingArea = ZONE_RED;
-        overTemperatureBlackOn = false;
-        overTemperatureRedOn = true;
-        overTemperatureYellowOn = true;
-    }
-    else if (Temperature > DEG_C_TO_TEMP(GREEN_TEMP_HIGH))
-    {
-        operatingArea = ZONE_YELLOW;
-        overTemperatureBlackOn = false;
-        overTemperatureRedOn = false;
-        overTemperatureYellowOn = true;
-    }
-    else if (Temperature > DEG_C_TO_TEMP(GREEN_TEMP_LOW))
-    {
-        operatingArea = ZONE_GREEN;
-        overTemperatureBlackOn = false;
-        overTemperatureRedOn = false;
-        overTemperatureYellowOn = false;
-    }
-    else if (Temperature > DEG_C_TO_TEMP(YELLOW_TEMP_LOW))
-    {
-        operatingArea = ZONE_YELLOW;
-        overTemperatureBlackOn = false;
-        overTemperatureRedOn = false;
-        overTemperatureYellowOn = true;
-    }
-    else if (Temperature > DEG_C_TO_TEMP(RED_TEMP_LOW))
-    {
-        operatingArea = ZONE_RED;
-        overTemperatureBlackOn = false;
-        overTemperatureRedOn = true;
-        overTemperatureYellowOn = true;
-    }
-    else if (Temperature < DEG_C_TO_TEMP(RED_TEMP_LOW))
-    {
-        operatingArea = ZONE_BLACK;
-        overTemperatureBlackOn = true;
-        overTemperatureRedOn = true;
-        overTemperatureYellowOn = true;
-    }
-    else
-    {
-        operatingArea = ZONE_BLACK;
-        overTemperatureBlackOn = true;
-        overTemperatureRedOn = true;
-        overTemperatureYellowOn = true;
-    }
+    overVoltageBlackOn = (Voltage > RED_VOLTAGE_HIGH || Voltage < RED_VOLTAGE_LOW)?true:false;
+    overVoltageRedOn = (Voltage > YELLOW_VOLTAGE_HIGH || Voltage < YELLOW_VOLTAGE_LOW)?true:false;
+    overVoltageYellowOn = (Voltage > GREEN_VOLTAGE_HIGH || Voltage < GREEN_VOLTAGE_LOW)?true:false;
+    overTemperatureBlackOn = (Temperature > DEG_C_TO_TEMP(RED_TEMP_HIGH) || Temperature < DEG_C_TO_TEMP(RED_TEMP_LOW))?true:false;
+    overTemperatureRedOn = (Temperature > DEG_C_TO_TEMP(YELLOW_TEMP_HIGH) || Temperature < DEG_C_TO_TEMP(YELLOW_TEMP_LOW))?true:false;
+    overTemperatureYellowOn = (Temperature > DEG_C_TO_TEMP(GREEN_TEMP_HIGH) || Temperature < DEG_C_TO_TEMP(GREEN_TEMP_LOW))?true:false;
+    operatingArea = (overVoltageBlackOn || overTemperatureBlackOn)?ZONE_BLACK:((overVoltageRedOn || overTemperatureRedOn)?ZONE_RED:((overVoltageYellowOn || overTemperatureYellowOn)?ZONE_YELLOW:ZONE_GREEN));
 
     alarmsMask = (overTemperatureBlackOn      << 0)  |
                  (underTemperatureBlackOn     << 1)  |
@@ -197,6 +92,7 @@ void c_Cell::displayCell()
     printf("IMD : %u\n", IMD);
     printf("IMR : %u\n", IMR);
     printf("IMC : %u\n", IMC);
+    printf("State : %s\n", getStateString());
 }
 
 void c_Cell::IMDRCcheck()
@@ -261,4 +157,34 @@ void c_Cell::IMDRCcheck()
     numRows = 6; // Number of rows including the first T Cell Max row
     numCols = 6; // Number of columns including the first SoC column
     IMR = (uint16_t) SysCore.getInterpolatedValue(f_Map_IMR_Soc_TMax, numRows, numCols, x, y);
+}
+
+// Set the state of the cell
+void c_Cell::setState(CellState newState)
+{
+    state = newState;
+}
+
+// Get the state of the cell
+c_Cell::CellState c_Cell::getState() const
+{
+    return state;
+}
+
+// Get the state of the cell as a string
+const char* c_Cell::getStateString() const
+{
+    switch (state)
+    {
+        case OFF:
+            return "OFF";
+        case CHARGE:
+            return "CHARGE";
+        case DISCHARGE:
+            return "DISCHARGE";
+        case STORAGE:
+            return "STORAGE";
+        default:
+            return "UNKNOWN";
+    }
 }

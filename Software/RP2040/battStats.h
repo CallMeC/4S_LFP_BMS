@@ -15,7 +15,6 @@
 class c_battStats
 {
     public:
-
         c_battStats();
         void randomVal();
         void displayVal();
@@ -27,6 +26,7 @@ class c_battStats
         uint16_t randomSoC();
         uint16_t randomSoH();
         uint16_t randomTemp();
+        const char* getStateString() const;
 
         void commandParser(uint8_t command[MAX_IN_LENGTH]);       
 
@@ -69,6 +69,7 @@ class c_battStats
         uint16_t V_Max_Pack;
         uint16_t V_Min_Pack;
         uint8_t  operatingArea_Pack;
+        c_Cell::CellState state;
 
         uint32_t SerialNumber;
 

@@ -32,6 +32,14 @@
 class c_Cell
 {
     public :
+        enum CellState
+        {
+            OFF,
+            CHARGE,
+            DISCHARGE,
+            STORAGE
+        };
+
         c_Cell();
 
         uint16_t SoC;           //% (*10)
@@ -43,6 +51,8 @@ class c_Cell
         uint16_t IMD;           //A Maximum Dynamic Discharge Current
         uint16_t IMR;           //A Maximum Dynamic Regeneration Current
         uint16_t IMC;           //A Maximum Dynamic Charge Current
+
+        CellState state;        // Cell state
 
         bool overTemperatureBlackOn;
         bool underTemperatureBlackOn;
@@ -65,6 +75,11 @@ class c_Cell
         void checkCell();
         void displayCell();
         void IMDRCcheck();
+
+          // Methods to manage cell state
+        void setState(CellState newState);
+        CellState getState() const;
+        const char* getStateString() const;
 };
 
 #endif
