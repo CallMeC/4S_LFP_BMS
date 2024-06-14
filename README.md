@@ -58,6 +58,9 @@ A new version is currently under developpement. Here are some previews :
 ![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/298e1745-1c2e-4b97-8dc4-2f3d7fb2bee3)
 ![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/ce9d1496-16b1-4a63-81b4-489c1bb8399a)
 
+# Thanks
+Thanks to @Ustan26 for his great help reviewing code !
+
 # License
 MIT License
 
