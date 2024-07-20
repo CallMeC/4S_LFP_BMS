@@ -1,3 +1,4 @@
+#include "appVariable.h"
 #include "battStats.h"
 #include <time.h>
 #include <cstdlib>
@@ -10,6 +11,8 @@ c_battStats::c_battStats()
     Cell3.SoC = 0;
     SoCCellMax = 0;
     SoCCellMin = 0;
+    cellNbrSoCMin = Cell0;
+    cellNbrSoCMax = Cell0;
 
     Cell0.SoH = 0;
     Cell1.SoH = 0;
@@ -17,6 +20,8 @@ c_battStats::c_battStats()
     Cell3.SoH = 0;
     SoHCellMax = 0;
     SoHCellMin = 0;
+    cellNbrSoHMin = Cell0;
+    cellNbrSoHMax = Cell0;
 
     Cell0.Voltage = 0;
     Cell1.Voltage = 0;
@@ -24,6 +29,8 @@ c_battStats::c_battStats()
     Cell3.Voltage = 0;
     VCellMax = 0;
     VCellMin = 0;
+    cellNbrVMin = Cell0;
+    cellNbrVMax = Cell0;
 
     Cell0.Temperature = 0;
     Cell1.Temperature = 0;
@@ -31,6 +38,8 @@ c_battStats::c_battStats()
     Cell3.Temperature = 0;
     TCellMax = 0;
     TCellMin = 0;
+    cellNbrTMin = Cell0;
+    cellNbrTMax = Cell0;
 
     calibrationShuntValue = 300;  //uOhms
     IShunt = 0;
@@ -44,6 +53,7 @@ c_battStats::c_battStats()
     T_Min_Pack = 0;
     V_Max_Pack = 0;
     V_Min_Pack = 0;
+    V_Delta_Cell_Max = 0;
     operatingArea_Pack = ZONE_GREEN;
     state = c_Cell::CellState::OFF;
     SerialNumber = 0x12345678;
@@ -63,34 +73,22 @@ void c_battStats::randomVal()
     Cell0.Voltage = randomVoltage();
     Cell1.Voltage = randomVoltage();
     Cell2.Voltage = randomVoltage();
-    Cell3.Voltage = randomVoltage();
-    VCellMax = 1;//
-    VCellMin = 4;//
-    V_Max_Pack = max(max(Cell0.Voltage, Cell1.Voltage), max(Cell2.Voltage, Cell3.Voltage));
-    V_Min_Pack = min(min(Cell0.Voltage, Cell1.Voltage), min(Cell2.Voltage, Cell3.Voltage));
+    Cell3.Voltage = randomVoltage();    
 
     Cell0.Temperature = randomTemp();
     Cell1.Temperature = randomTemp();
     Cell2.Temperature = randomTemp();
     Cell3.Temperature = randomTemp();
-    TCellMax = 1;//
-    TCellMin = 4;//
-    T_Max_Pack = max(max(Cell0.Temperature, Cell1.Temperature), max(Cell2.Temperature, Cell3.Temperature));
-    T_Min_Pack = min(min(Cell0.Temperature, Cell1.Temperature), min(Cell2.Temperature, Cell3.Temperature));
 
     Cell0.SoC = randomSoC();
     Cell1.SoC = randomSoC();
     Cell2.SoC = randomSoC();
     Cell3.SoC = randomSoC();
-    SoCCellMax = 1;//max(max(Cell0.SoC, Cell1.SoC), max(Cell2.SoC, Cell3.SoC));
-    SoCCellMin = 4;//min(min(Cell0.SoC, Cell1.SoC), min(Cell2.SoC, Cell3.SoC));
 
     Cell0.SoH = randomSoH();
     Cell1.SoH = randomSoH();
     Cell2.SoH = randomSoH();
     Cell3.SoH = randomSoH();
-    SoHCellMax = 1;//max(max(Cell0.SoH, Cell1.SoH), max(Cell2.SoH, Cell3.SoH));
-    SoHCellMin = 4;//min(min(Cell0.SoH, Cell1.SoH), min(Cell2.SoH, Cell3.SoH));
 
     IShunt = randomCurrent();
 }
@@ -107,6 +105,27 @@ void c_battStats::synthesisPack()
   Cell2.checkCell();
   Cell3.checkCell();
 
+  V_Max_Pack = max(max(Cell0.Voltage, Cell1.Voltage), max(Cell2.Voltage, Cell3.Voltage));
+  V_Min_Pack = min(min(Cell0.Voltage, Cell1.Voltage), min(Cell2.Voltage, Cell3.Voltage));
+  cellNbrVMax = whoMax(Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage);
+  cellNbrVMin = whoMin(Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage);
+
+  T_Max_Pack = max(max(Cell0.Temperature, Cell1.Temperature), max(Cell2.Temperature, Cell3.Temperature));
+  T_Min_Pack = min(min(Cell0.Temperature, Cell1.Temperature), min(Cell2.Temperature, Cell3.Temperature));
+  cellNbrTMax = whoMax(Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature);
+  cellNbrTMin = whoMin(Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature);
+
+  SoCCellMax = max(max(Cell0.SoC, Cell1.SoC), max(Cell2.SoC, Cell3.SoC));
+  SoCCellMin = min(min(Cell0.SoC, Cell1.SoC), min(Cell2.SoC, Cell3.SoC));
+  cellNbrSoCMax = whoMax(Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC);
+  cellNbrSoCMin = whoMin(Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC);
+
+  SoHCellMax = max(max(Cell0.SoH, Cell1.SoH), max(Cell2.SoH, Cell3.SoH));
+  SoHCellMin = min(min(Cell0.SoH, Cell1.SoH), min(Cell2.SoH, Cell3.SoH));
+  cellNbrSoHMax = whoMax(Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH);
+  cellNbrSoHMin = whoMin(Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH);
+  V_Delta_Cell_Max = V_Max_Pack - V_Min_Pack; //Shall be bellow DELTA_U_MAX for a balanced pack
+  
   V_Pack = Cell0.Voltage + Cell1.Voltage + Cell2.Voltage + Cell3.Voltage;
 
   SoC_Pack = min(min(Cell0.SoC, Cell1.SoC), min(Cell2.SoC, Cell3.SoC));
@@ -116,10 +135,29 @@ void c_battStats::synthesisPack()
   IMR_Pack = min(min(Cell0.IMR, Cell1.IMR), min(Cell2.IMR, Cell3.IMR));
   IMC_Pack = min(min(Cell0.IMC, Cell1.IMC), min(Cell2.IMC, Cell3.IMC));
 
+  // All Cells must have the same state, else the pack is off
   if ((Cell0.getState() == Cell1.getState()) && (Cell1.getState() == Cell2.getState()) && (Cell2.getState() == Cell3.getState()))
     state = Cell0.getState();
   else
     state = c_Cell::CellState::OFF;
+
+  // Updating data according to state
+  if (V_Delta_Cell_Max > DELTA_U_MAX) //A cell is too charged compared to others, if we are in charge or standby we should balance it
+  {
+    if (DEG_C_TO_TEMP(cellNbrVMax.Temperature) < YELLOW_TEMP_HIGH) //On fait attention à ne pas trop chauffer
+    {
+      cellNbrVMax.setBypassState(true);
+      if (cellNbrVMax == Cell0) IOManager.setBalancingC1(true);
+      if (cellNbrVMax == Cell1) IOManager.setBalancingC2(true);
+      if (cellNbrVMax == Cell2) IOManager.setBalancingC3(true);
+      if (cellNbrVMax == Cell3) IOManager.setBalancingC4(true);
+    }
+  }
+  else
+  {
+    Cell0.setBypassState(false); Cell1.setBypassState(false); Cell2.setBypassState(false); Cell3.setBypassState(false);
+    IOManager.setBalancingC1(false); IOManager.setBalancingC2(false); IOManager.setBalancingC3(false); IOManager.setBalancingC4(false);
+  }
 }
 
 void c_battStats::displayVal()
@@ -195,6 +233,26 @@ uint16_t c_battStats::max(uint16_t a, uint16_t b)
 {
     if (a > b) return a;
     return b;
+}
+
+c_Cell c_battStats::whoMin(uint16_t Cell0Val, uint16_t Cell1Val, uint16_t Cell2Val, uint16_t Cell3Val)
+{
+  uint16_t minVal = min(min(Cell0Val, Cell1Val), min(Cell2Val, Cell3Val));
+  if (minVal == Cell0Val) return Cell0;
+  if (minVal == Cell1Val) return Cell1;
+  if (minVal == Cell2Val) return Cell2;
+  if (minVal == Cell3Val) return Cell3;
+  else return Cell0;
+}
+
+c_Cell c_battStats::whoMax(uint16_t Cell0Val, uint16_t Cell1Val, uint16_t Cell2Val, uint16_t Cell3Val)
+{
+  uint16_t maxVal = max(max(Cell0Val, Cell1Val), max(Cell2Val, Cell3Val));
+  if (maxVal == Cell0Val) return Cell0;
+  if (maxVal == Cell1Val) return Cell1;
+  if (maxVal == Cell2Val) return Cell2;
+  if (maxVal == Cell3Val) return Cell3;  
+  else return Cell0;
 }
 
 // Get the state of the cell as a string

@@ -51,8 +51,11 @@ class c_Cell
         uint16_t IMD;           //A Maximum Dynamic Discharge Current
         uint16_t IMR;           //A Maximum Dynamic Regeneration Current
         uint16_t IMC;           //A Maximum Dynamic Charge Current
+        
 
         CellState state;        // Cell state
+
+        bool BypassState;
 
         bool overTemperatureBlackOn;
         bool underTemperatureBlackOn;
@@ -71,7 +74,7 @@ class c_Cell
         bool alarms[12];
         uint32_t alarmsMask;
 
-        bool setBypassState(bool bypassState);
+        bool setBypassState(bool bypassStateCmd);
         void checkCell();
         void displayCell();
         void IMDRCcheck();
@@ -80,6 +83,15 @@ class c_Cell
         void setState(CellState newState);
         CellState getState() const;
         const char* getStateString() const;
+
+
+        bool operator==(const c_Cell& other) const
+        {
+        return SoC == other.SoC &&
+               SoH == other.SoH &&
+               Voltage == other.Voltage &&
+               Temperature == other.Temperature;
+        }
 };
 
 #endif

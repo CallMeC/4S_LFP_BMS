@@ -8,6 +8,7 @@ int main()
 
     printf("START\n");
     IOManager.GPIO_init();
+    uartHandler._uart_init();
     IOManager.peripheralsInit();
     IOManager.bootfinished();
     
@@ -19,8 +20,7 @@ int main()
     while (1)
     {
         uartHandler._uart_mainLoop();
-        IOManager.mainLoop();
-        //printf("....H\n");    
+        IOManager.mainLoop(); 
     }
 }
 

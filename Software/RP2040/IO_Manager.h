@@ -23,6 +23,10 @@ class c_IO_Manager
         void peripheralsInit();
         void mainLoop();
         void callBack();
+        void setBalancingC1(bool state);
+        void setBalancingC2(bool state);
+        void setBalancingC3(bool state);
+        void setBalancingC4(bool state);
 };
 
 #endif

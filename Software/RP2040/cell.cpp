@@ -17,6 +17,7 @@ c_Cell::c_Cell()
     IMR                         = 0;
     IMC                         = 0;
     IMD                         = 0;
+    BypassState                 = false;
 
     state                       = OFF;
 
@@ -48,8 +49,9 @@ c_Cell::c_Cell()
                  (underVoltageYellowOn        << 11);
 }
 
-bool c_Cell::setBypassState(bool bypassState)
+bool c_Cell::setBypassState(bool bypassStateCmd)
 {
+    BypassState = bypassStateCmd;
     return true;
 }
 
