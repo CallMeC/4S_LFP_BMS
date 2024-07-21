@@ -34,7 +34,8 @@ This BMS is based on the RP2040, the software is in early stage and not fully fu
 Nevertheless, it can communicate to a computer by UART through USB. This way we can easily monitor the different cells caracteristics.
 
 # Preview
-![alt_text](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/9a78f79c-589f-48e5-881a-750def5a0536)
+![2024-07-21-15-53-03-ezgif com-optimize](https://github.com/user-attachments/assets/21468d37-094f-4e1a-8739-3b3db1198431)
+
 
 QT C++ Programm to visualise BMS characteristics in real time.
 
