@@ -28,6 +28,8 @@
 #endif
 
 EXT_APP_DATA uint8_t VERBOSE_ENABLED;
+EXT_APP_DATA uint32_t BMS_SERIAL_NUMBER;
+
 
 //IO
 EXT_APP_DATA c_IO_Manager IOManager;
@@ -39,6 +41,7 @@ EXT_APP_DATA bool timer_callback(repeating_timer_t *rt);
 //UART
 EXT_APP_DATA c_uartHandler uartHandler;
 EXT_APP_DATA uint8_t BufferRx[200];
+EXT_APP_DATA uint8_t BufferRxUSB[200];
 EXT_APP_DATA uint8_t BufferTx[200];
 EXT_APP_DATA void ext_callback_uart_rx();
 

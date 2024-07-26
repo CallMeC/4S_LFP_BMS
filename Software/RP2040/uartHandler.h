@@ -15,16 +15,22 @@
 #define UART_MAX_LENGTH     512
 #define UART_FLAG_RX        1
 #define UART_FLAG_TX        2
+#define UART_MAIN_PROCESS   3
 
 class c_uartHandler
 {
     public:
         uint8_t uart_rcv_buf_first[UART_MAX_LENGTH] = {0};
+        uint8_t uart_rcv_buf_first_USB[UART_MAX_LENGTH] = {0};
         uint16_t uart_rcv_cpt;
+        uint16_t uart_rcv_cpt_USB;
         uint8_t* double_pointer = &uart_rcv_buf_first[0];
+        uint8_t* double_pointer_USB = &uart_rcv_buf_first_USB[0];
 
         volatile uint8_t UART_FLAG;
+        volatile uint8_t UART_FLAG_USB;
         uint8_t ch;
+        uint8_t ch_USB;
         int UART_IRQ;
         
 
@@ -33,6 +39,7 @@ class c_uartHandler
         void callback_uart_rx();
         void _uart_write(uint8_t* buf, uint8_t len);
         void _uart_mainLoop();
+        void _uart_get_from_USB();
 };
 
 #endif

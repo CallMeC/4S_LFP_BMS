@@ -54,9 +54,9 @@ c_battStats::c_battStats()
     V_Max_Pack = 0;
     V_Min_Pack = 0;
     V_Delta_Cell_Max = 0;
+    balancingState = 0;
     operatingArea_Pack = ZONE_GREEN;
     state = c_Cell::CellState::OFF;
-    SerialNumber = 0x12345678;
     char BigStr[100];
 
     alarmN1 = 0xAA;
@@ -147,16 +147,17 @@ void c_battStats::synthesisPack()
     if (DEG_C_TO_TEMP(cellNbrVMax.Temperature) < YELLOW_TEMP_HIGH) //On fait attention à ne pas trop chauffer
     {
       cellNbrVMax.setBypassState(true);
-      if (cellNbrVMax == Cell0) IOManager.setBalancingC1(true);
-      if (cellNbrVMax == Cell1) IOManager.setBalancingC2(true);
-      if (cellNbrVMax == Cell2) IOManager.setBalancingC3(true);
-      if (cellNbrVMax == Cell3) IOManager.setBalancingC4(true);
+      if (cellNbrVMax == Cell0) { IOManager.setBalancingC1(true); balancingState = 0x01;}
+      if (cellNbrVMax == Cell1) { IOManager.setBalancingC2(true); balancingState = 0x02;}
+      if (cellNbrVMax == Cell2) { IOManager.setBalancingC3(true); balancingState = 0x04;}
+      if (cellNbrVMax == Cell3) { IOManager.setBalancingC4(true); balancingState = 0x08;}
     }
   }
   else
   {
     Cell0.setBypassState(false); Cell1.setBypassState(false); Cell2.setBypassState(false); Cell3.setBypassState(false);
     IOManager.setBalancingC1(false); IOManager.setBalancingC2(false); IOManager.setBalancingC3(false); IOManager.setBalancingC4(false);
+    balancingState = 0x00;
   }
 }
 
@@ -191,11 +192,11 @@ void c_battStats::sendGUIVal()
   if (state == c_Cell::CellState::DISCHARGE) stateValue = 2;
   if (state == c_Cell::CellState::STORAGE) stateValue = 3;
 
-  printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
-          Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage, VCellMax, VCellMin, Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature,
-          TCellMax, TCellMin, Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC, SoCCellMax, SoCCellMin,
-          Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH, SoHCellMax, SoHCellMin, V_Pack, IShunt, SoC_Pack,
-          SoH_Pack, alarmN1, alarmN2, alarmN3, calibrationShuntValue, IMD_Pack, IMR_Pack, IMC_Pack, stateValue);
+  printf("%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;%u;W\n",
+          Cell0.Voltage, Cell1.Voltage, Cell2.Voltage, Cell3.Voltage, cellNumberToU8(cellNbrVMax), cellNumberToU8(cellNbrVMin), Cell0.Temperature, Cell1.Temperature, Cell2.Temperature, Cell3.Temperature,
+          cellNumberToU8(cellNbrTMax), cellNumberToU8(cellNbrTMin), Cell0.SoC, Cell1.SoC, Cell2.SoC, Cell3.SoC, cellNumberToU8(cellNbrSoCMax), cellNumberToU8(cellNbrSoCMin),
+          Cell0.SoH, Cell1.SoH, Cell2.SoH, Cell3.SoH, cellNumberToU8(cellNbrSoHMax), cellNumberToU8(cellNbrSoHMin), V_Pack, IShunt, SoC_Pack,
+          SoH_Pack, alarmN1, alarmN2, alarmN3, calibrationShuntValue, IMD_Pack, IMR_Pack, IMC_Pack, stateValue, balancingState, BMS_SERIAL_NUMBER);
 }
 
 uint16_t c_battStats::randomVoltage()  //Range 2500-3650
@@ -271,4 +272,13 @@ const char* c_battStats::getStateString() const
         default:
             return "UNKNOWN";
     }
+}
+
+uint8_t c_battStats::cellNumberToU8(c_Cell cell)
+{
+  if (cell == Cell0) return 0;
+  if (cell == Cell1) return 1;
+  if (cell == Cell2) return 2;
+  if (cell == Cell3) return 3;
+  else return 0;
 }

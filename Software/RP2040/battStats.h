@@ -79,9 +79,8 @@ class c_battStats
         uint16_t V_Min_Pack;
         uint16_t V_Delta_Cell_Max;
         uint8_t  operatingArea_Pack;
+        uint8_t balancingState;
         c_Cell::CellState state;
-
-        uint32_t SerialNumber;
 
         uint8_t alarmN1;
         uint8_t alarmN2;
@@ -97,6 +96,7 @@ class c_battStats
         uint16_t max(uint16_t a, uint16_t b);
         c_Cell whoMin(uint16_t Cell0Val, uint16_t Cell1Val, uint16_t Cell2Val, uint16_t Cell3Val);
         c_Cell whoMax(uint16_t Cell0Val, uint16_t Cell1Val, uint16_t Cell2Val, uint16_t Cell3Val);
+        uint8_t cellNumberToU8(c_Cell cell);
 };
 
 #endif
