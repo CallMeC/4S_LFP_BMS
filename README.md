@@ -1,5 +1,4 @@
 # 4S Lithium Iron Phosphate BMS RP2040 based
-This project was made between feb 2023 and apr 2023, it is still under developpement during my free time.
 This BMS is intented to be used with EVE LF105 LFP cells. It goes on top of them, and is attached thanks to screws. The busbar is inside the PCB.
 
 # Capabilities
