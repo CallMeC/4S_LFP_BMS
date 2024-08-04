@@ -7,6 +7,7 @@
 #define SOMETHINGTODODEFAULT    0
 #define SOMETHINGTODO           1
 #define SOMETHINGTODOTOO        2
+#define UPDATE_VALUES           3
 
 class c_IO_Manager
 {

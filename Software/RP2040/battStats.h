@@ -66,6 +66,7 @@ class c_battStats
         uint16_t TCellMin;
 
         uint16_t calibrationShuntValue;
+        uint8_t  calibrationAoPGain;
         uint16_t IShunt;
         uint16_t V_Pack;
         uint16_t SoC_Pack;

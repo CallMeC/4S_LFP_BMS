@@ -41,7 +41,8 @@ c_battStats::c_battStats()
     cellNbrTMin = Cell0;
     cellNbrTMax = Cell0;
 
-    calibrationShuntValue = 300;  //uOhms
+    calibrationShuntValue = 200;  //uOhms by default
+    calibrationAoPGain = 50;  //by Default for A2 devices
     IShunt = 0;
     V_Pack = 0;
     SoC_Pack = 0;
@@ -90,7 +91,7 @@ void c_battStats::randomVal()
     Cell2.SoH = randomSoH();
     Cell3.SoH = randomSoH();
 
-    IShunt = randomCurrent();
+    //IShunt = randomCurrent();
 }
 
 void c_battStats::synthesisPack()

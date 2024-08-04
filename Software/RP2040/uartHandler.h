@@ -31,6 +31,7 @@ class c_uartHandler
         volatile uint8_t UART_FLAG_USB;
         uint8_t ch;
         uint8_t ch_USB;
+        uint8_t okaybecauseCommand;
         int UART_IRQ;
         
 

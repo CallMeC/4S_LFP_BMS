@@ -6,23 +6,17 @@ int main()
 {
     stdio_init_all();
 
-    BMS_SERIAL_NUMBER = 0x04020101; //Type (04) - Revision (02) - Batch (01) - SN (01)
-
     printf("START\n");
     IOManager.GPIO_init();
     uartHandler._uart_init();
     IOManager.peripheralsInit();
     IOManager.bootfinished();
-    
-    /* // Write procedure to flash
-    PARAM_FLASH_0 = 45;
-    PARAM_FLASH_1 = 78;
-    FLASHMGR.writeFlash();*/
 
     while (1)
     {
         uartHandler._uart_mainLoop();
         uartHandler._uart_get_from_USB();
+        IO_OPERATION = UPDATE_VALUES;
         IOManager.mainLoop(); 
 
         if (uartHandler.UART_FLAG_USB == UART_MAIN_PROCESS) //Command to process
@@ -34,13 +28,25 @@ int main()
                     uartHandler.UART_FLAG_USB = 0;
                     break;
                 case 0x22:  //Shunt Update
+                    printf("Buffer : %02X %02X %02X %02X %02X %02X %02X %02X\n",BufferRxUSB[0], BufferRxUSB[1], BufferRxUSB[2], BufferRxUSB[3], BufferRxUSB[4], BufferRxUSB[5], BufferRxUSB[6], BufferRxUSB[7]);
                     BATTSTAT.calibrationShuntValue = ((BufferRxUSB[1] << 8) | BufferRxUSB[2]);
-                    //printf("Shunt : %u\n",BATTSTAT.calibrationShuntValue);
+                    FLASHMGR.updateParam();
+                    printf("Shunt : %u\n",BATTSTAT.calibrationShuntValue);
                     uartHandler.UART_FLAG_USB = 0;
                     break;
                 case 0x23:  //SN Update
+                    //printf("Buffer : %02X %02X %02X %02X %02X %02X %02X %02X\n",BufferRxUSB[0], BufferRxUSB[1], BufferRxUSB[2], BufferRxUSB[3], BufferRxUSB[4], BufferRxUSB[5], BufferRxUSB[6], BufferRxUSB[7]);
                     BMS_SERIAL_NUMBER = (BufferRxUSB[1] << 24) | (BufferRxUSB[2] << 16) | (BufferRxUSB[3] << 8)  | BufferRxUSB[4];
-                    //printf("SN : %u\n",BMS_SERIAL_NUMBER);
+                    printf("SN : %08X\n",BMS_SERIAL_NUMBER);
+                    FLASHMGR.updateParam();
+                    uartHandler.UART_FLAG_USB = 0;
+                    break;   
+                case 0x24:  //I2C Scan
+                    printf("I2C Scan\n");
+                    I2C_0.Scan(i2c0);
+                    //FLASHMGR.readFlash();
+                    FLASHMGR.dumpEEPROM();
+                    
                     uartHandler.UART_FLAG_USB = 0;
                     break;   
                 default:
@@ -60,11 +66,8 @@ bool timer_callback(repeating_timer_t *rt)
     //BATTSTAT.displayVal();
     BATTSTAT.sendGUIVal();
 
-    /* // Read flash procedure
-    PARAM_FLASH_0 = 0;
-    PARAM_FLASH_1 = 0;
-    FLASHMGR.readFlash();
-    printf("PARAM 0 : %u\n PARAM 1 : %u\n\n", PARAM_FLASH_0, PARAM_FLASH_1);*/
+    // Read flash procedure
+    //FLASHMGR.writeFlash();
 
     return true;
 }

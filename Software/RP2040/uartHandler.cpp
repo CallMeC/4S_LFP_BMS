@@ -73,8 +73,9 @@ void c_uartHandler::_uart_mainLoop()
     if (UART_FLAG_USB == UART_FLAG_RX)
     {
         //Le contenu est pret dans DOUBLE_POINTEUR
-        sprintf((char *)BufferRxUSB, "%s\n", double_pointer_USB);
-        printf("%s", BufferRxUSB);
+        memcpy(BufferRxUSB, double_pointer_USB, 8);
+        //sprintf((char *)BufferRxUSB, "%s\n", double_pointer_USB);
+        //printf("%s", BufferRxUSB);
         double_pointer_USB = &uart_rcv_buf_first_USB[0];
         UART_FLAG_USB = UART_MAIN_PROCESS;
     }
@@ -101,24 +102,30 @@ void c_uartHandler::_uart_get_from_USB()
     if (UART_FLAG_USB == 0)                                 //Reception allowed
     {
         ch_USB = getchar_timeout_us(10);
+        if (ch_USB >= 0xF0) //Timedout
+                return;
         if ((ch_USB >= 'a' && ch_USB <= 'z') || 
             (ch_USB >= 'A' && ch_USB <= 'Z') || 
             (ch_USB >= '0' && ch_USB <= '9') || 
-            (ch_USB >= 0x21 && ch_USB <= 0x23) || 
+            (ch_USB >= 0x21 && ch_USB <= 0x24) || 
             ch_USB == '\n' || 
-            ch_USB == '\r')
+            ch_USB == '\r' || 
+            okaybecauseCommand == 1)
         {
+            if (ch_USB >= 0x21 && ch_USB <= 0x23)   //Command in comming
+                okaybecauseCommand = 1;
             if (uart_rcv_cpt_USB >= UART_MAX_LENGTH)            //On va dépasser la longueur MAX ?
             {   
                 UART_FLAG_USB = 1;                              //Paquet pret a être récupéré
                 double_pointer_USB[UART_MAX_LENGTH-1] = '\0';   //Fin du String
                 uart_rcv_cpt_USB = 0;
+                okaybecauseCommand = 0;
                 return;
             }
 
             if (ch_USB != 0x0D)                                 //Si on a pas de fin de ligne
             {
-                double_pointer_USB[uart_rcv_cpt_USB] = ch_USB;          //On allimente le buffer
+                double_pointer_USB[uart_rcv_cpt_USB] = ch_USB;  //On allimente le buffer
                 uart_rcv_cpt_USB++;                             //On se prépare pour le prochain caractère
             }
             else                                                //On a une fin de ligne
@@ -126,8 +133,11 @@ void c_uartHandler::_uart_get_from_USB()
                 UART_FLAG_USB = 1;                              //Paquet pret a être récupéré
                 double_pointer_USB[uart_rcv_cpt_USB] = '\0';
                 uart_rcv_cpt_USB = 0;
+                okaybecauseCommand = 0;
                 return;
             }
         }
+        else
+            printf("NO : %02X\n", ch_USB);
     }
 }

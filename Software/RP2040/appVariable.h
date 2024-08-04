@@ -28,7 +28,7 @@
 #endif
 
 EXT_APP_DATA uint8_t VERBOSE_ENABLED;
-EXT_APP_DATA uint32_t BMS_SERIAL_NUMBER;
+EXT_APP_DATA uint32_t BMS_SERIAL_NUMBER;    //Type (04) - Revision (02) - Batch (01) - SN (01)
 
 
 //IO

@@ -6,14 +6,13 @@
 void c_IO_Manager::IO_Toggle()
 {   
     if (LED_MICRO_STATE == 0) LED_MICRO_STATE = 1; else LED_MICRO_STATE = 0;
-    gpio_put(PIN_25, LED_MICRO_STATE);
+    gpio_put(OUTPUT_LED, LED_MICRO_STATE);
 }
 
 void c_IO_Manager::GPIO_init()
 {
     VERBOSE_ENABLED = 0;
     
-    gpio_init(PIN_25);
 
     gpio_init(RESET);
     gpio_init(OUTPUT_LED);
@@ -70,6 +69,7 @@ void c_IO_Manager::peripheralsInit()
     I2C_0.Init();
 
     ADC_0.Init(0x6D, I2C_0);
+    FMGR_NAME.Init(0x50, I2C_0);
 }
 
 void c_IO_Manager::mainLoop()
@@ -79,7 +79,12 @@ void c_IO_Manager::mainLoop()
         case SOMETHINGTODO:
             printf("IO TOGGLED\n");
             break;
-        
+
+        case UPDATE_VALUES:
+            //printf("ADC PTS : %u\n", adc_read());
+            BATTSTAT.IShunt = 0.08056*adc_read();   //Conversion 12-bits -> Amps
+            break;
+
         default:
             break;
     }
