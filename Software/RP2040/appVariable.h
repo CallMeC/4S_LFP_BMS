@@ -61,3 +61,11 @@ EXT_APP_DATA c_faultsManager FAULTS_MGR;
 
 //System Core
 EXT_APP_DATA c_SystemCore SysCore;
+
+//Filters
+EXT_APP_DATA TemperatureFilter tempFilterNTC1;
+EXT_APP_DATA TemperatureFilter tempFilterNTC2;
+EXT_APP_DATA TemperatureFilter tempFilterNTC3;
+EXT_APP_DATA TemperatureFilter tempFilterNTC4;
+
+EXT_APP_DATA CurrentFilter currentFilter;

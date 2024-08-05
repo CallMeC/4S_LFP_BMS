@@ -76,10 +76,10 @@ void c_battStats::randomVal()
     Cell2.Voltage = randomVoltage();
     Cell3.Voltage = randomVoltage();    
 
-    Cell0.Temperature = randomTemp();
-    Cell1.Temperature = randomTemp();
-    Cell2.Temperature = randomTemp();
-    Cell3.Temperature = randomTemp();
+    //Cell0.Temperature = randomTemp();
+    //Cell1.Temperature = randomTemp();
+    //Cell2.Temperature = randomTemp();
+    //Cell3.Temperature = randomTemp();
 
     Cell0.SoC = randomSoC();
     Cell1.SoC = randomSoC();

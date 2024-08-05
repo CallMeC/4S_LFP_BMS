@@ -28,6 +28,7 @@
 #define CELL_CAPA_AH        105     //A.h
 
 #define DEG_C_TO_TEMP(DEG) (DEG-1000)/10
+#define TEMP_TO_DEG_C(TEMP) (TEMP*10) + 1000
 
 class c_Cell
 {
