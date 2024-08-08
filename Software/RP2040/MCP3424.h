@@ -16,6 +16,7 @@ class c_MCP3424
         void Init(uint8_t x,  c_I2C whichI2C);
         c_MCP3424();
         int readADC(uint8_t ADC_CHANNEL);  //Fait une lecture pour une voie
+        void generalCallReset();
 };
 
 #endif

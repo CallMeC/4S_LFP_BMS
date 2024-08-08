@@ -29,7 +29,7 @@ class c_battStats
         uint16_t randomTemp();
         const char* getStateString() const;
 
-        void commandParser(uint8_t command[MAX_IN_LENGTH]);       
+        void commandParser(uint8_t command[MAX_IN_LENGTH]);      
 
         #if CELLS_NUMBER == 4
             c_Cell Cell0;
@@ -67,7 +67,7 @@ class c_battStats
 
         uint16_t calibrationShuntValue;
         uint8_t  calibrationAoPGain;
-        uint16_t IShunt;
+        int IShunt;
         uint16_t V_Pack;
         uint16_t SoC_Pack;
         uint16_t SoH_Pack;
@@ -81,6 +81,8 @@ class c_battStats
         uint16_t V_Delta_Cell_Max;
         uint8_t  operatingArea_Pack;
         uint8_t balancingState;
+        uint8_t balancingEnabled;
+        uint8_t balancingCounter;
         c_Cell::CellState state;
 
         uint8_t alarmN1;

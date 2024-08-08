@@ -23,6 +23,13 @@ int c_MCP3424::readADC(uint8_t ADC_CHANNEL)
     if ((value & (1 << (BITS - 1))) != 0)  
         value = value - (1 << BITS);
     //printf("Value : %u %f V\n", value, value*4.096/262143.0);
+    //generalCallReset();
 
     return value;
+}
+
+void c_MCP3424::generalCallReset()
+{
+    uint8_t resetCommand = 0x06; // Commande de réinitialisation pour le MCP3424
+    I2C_ADC.sys_i2c_wbuf_reg(I2C_PORT, 0x00, resetCommand, nullptr, 0); // Adresse générale 0x00
 }

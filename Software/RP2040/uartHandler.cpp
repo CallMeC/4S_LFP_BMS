@@ -107,7 +107,7 @@ void c_uartHandler::_uart_get_from_USB()
         if ((ch_USB >= 'a' && ch_USB <= 'z') || 
             (ch_USB >= 'A' && ch_USB <= 'Z') || 
             (ch_USB >= '0' && ch_USB <= '9') || 
-            (ch_USB >= 0x21 && ch_USB <= 0x24) || 
+            (ch_USB >= 0x21 && ch_USB <= 0x26) || 
             ch_USB == '\n' || 
             ch_USB == '\r' || 
             okaybecauseCommand == 1)

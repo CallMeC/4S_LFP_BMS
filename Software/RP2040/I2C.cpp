@@ -1,22 +1,29 @@
 #include "I2C.h"
-#include <string.h>
 
 c_I2C::c_I2C() {}
 
-//Ecrit dans un registre à partir du buffer
-void c_I2C::sys_i2c_rbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, uint8_t* buf, size_t len)
+//Lit un registre et le place dans un buffer
+int32_t c_I2C::sys_i2c_rbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, uint8_t* pBuf, uint32_t len)
 {
-    i2c_write_blocking(i2c, addr, &reg, 1, true);
-    i2c_read_blocking(i2c, addr, buf, len, false);
+    int32_t ret = i2c_write_timeout_us(i2c, addr, &reg, 1, false, I2C_RTC_TIMEOUT);
+    if (ret > 0)
+    {
+        ret = i2c_read_timeout_us(i2c, addr, pBuf, len, false, len * I2C_RTC_TIMEOUT);
+    }
+    return ret;
 }
 
-void c_I2C::sys_i2c_wbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, const uint8_t* buf, size_t len)
+//Ecrit dans un registre à partir du buffer
+int32_t c_I2C::sys_i2c_wbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, uint8_t* pBuf, uint32_t len)
 {
-    uint8_t data[len + 1];
-    data[0] = reg;
-    memcpy(&data[1], buf, len);
-    i2c_write_blocking(i2c, addr, data, len + 1, false);
+    int32_t ret = i2c_write_timeout_us(i2c, addr, &reg, 1, true, I2C_RTC_TIMEOUT);
+    if (ret > 0)
+    {
+        ret = i2c_write_timeout_us(i2c, addr, pBuf, len, false, len * I2C_RTC_TIMEOUT);
+    }
+    return ret;
 }
+
 
 void c_I2C::Init() //Init of the I2C peripheral
 {

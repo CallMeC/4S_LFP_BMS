@@ -56,6 +56,8 @@ c_battStats::c_battStats()
     V_Min_Pack = 0;
     V_Delta_Cell_Max = 0;
     balancingState = 0;
+    balancingEnabled = 0;
+    balancingCounter = 210;
     operatingArea_Pack = ZONE_GREEN;
     state = c_Cell::CellState::OFF;
     char BigStr[100];
@@ -71,20 +73,20 @@ void c_battStats::randomVal()
 {
     srand (time(NULL));
 
-    Cell0.Voltage = randomVoltage();
-    Cell1.Voltage = randomVoltage();
-    Cell2.Voltage = randomVoltage();
-    Cell3.Voltage = randomVoltage();    
+    //Cell0.Voltage = randomVoltage();
+    //Cell1.Voltage = randomVoltage();
+    //Cell2.Voltage = randomVoltage();
+    //Cell3.Voltage = randomVoltage();    
 
     //Cell0.Temperature = randomTemp();
     //Cell1.Temperature = randomTemp();
     //Cell2.Temperature = randomTemp();
     //Cell3.Temperature = randomTemp();
 
-    Cell0.SoC = randomSoC();
-    Cell1.SoC = randomSoC();
-    Cell2.SoC = randomSoC();
-    Cell3.SoC = randomSoC();
+    //Cell0.SoC = randomSoC();
+    //Cell1.SoC = randomSoC();
+    //Cell2.SoC = randomSoC();
+    //Cell3.SoC = randomSoC();
 
     Cell0.SoH = randomSoH();
     Cell1.SoH = randomSoH();
@@ -145,13 +147,17 @@ void c_battStats::synthesisPack()
   // Updating data according to state
   if (V_Delta_Cell_Max > DELTA_U_MAX) //A cell is too charged compared to others, if we are in charge or standby we should balance it
   {
+    IOManager.setBalancingC1(false); IOManager.setBalancingC2(false); IOManager.setBalancingC3(false); IOManager.setBalancingC4(false);
+    if (balancingEnabled == 0) {printf("Balancing Disabled\n"); balancingState = 0x00; return;}
+    if (BYPASS_ENABLED == 0) { printf("User Balancing Disabled\n"); balancingState = 0x00; return; }
     if (DEG_C_TO_TEMP(cellNbrVMax.Temperature) < YELLOW_TEMP_HIGH) //On fait attention à ne pas trop chauffer
     {
       cellNbrVMax.setBypassState(true);
       if (cellNbrVMax == Cell0) { IOManager.setBalancingC1(true); balancingState = 0x01;}
-      if (cellNbrVMax == Cell1) { IOManager.setBalancingC2(true); balancingState = 0x02;}
-      if (cellNbrVMax == Cell2) { IOManager.setBalancingC3(true); balancingState = 0x04;}
-      if (cellNbrVMax == Cell3) { IOManager.setBalancingC4(true); balancingState = 0x08;}
+      else if (cellNbrVMax == Cell1) { IOManager.setBalancingC2(true); balancingState = 0x02;}
+      else if (cellNbrVMax == Cell2) { IOManager.setBalancingC3(true); balancingState = 0x04;}
+      else if (cellNbrVMax == Cell3) { IOManager.setBalancingC4(true); balancingState = 0x08;}
+      printf("BALANCING State %02X\n", balancingState);
     }
   }
   else

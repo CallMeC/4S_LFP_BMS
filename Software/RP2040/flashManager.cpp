@@ -18,6 +18,26 @@ void c_FlashManager::Init(uint8_t x,  c_I2C whichI2C)
     BMS_SERIAL_NUMBER = (param_data[0] << 24) | (param_data[1] << 16) | (param_data[2] << 8)  | param_data[3];
     BATTSTAT.calibrationShuntValue = ((param_data[4] << 8) | param_data[5]);
     BATTSTAT.calibrationAoPGain = param_data[6];
+
+    read_eeprom(0x0020, param_data, 24); //Retreiving Parameters
+    for (uint8_t i = 0; i < 24; i++)
+        BATTSTAT.Cell0.serialNumber[i] = param_data[i];
+    read_eeprom(0x0040, param_data, 24); //Retreiving Parameters
+    for (uint8_t i = 0; i < 24; i++)
+        BATTSTAT.Cell1.serialNumber[i] = param_data[i];
+    read_eeprom(0x0060, param_data, 24); //Retreiving Parameters
+    for (uint8_t i = 0; i < 24; i++)
+        BATTSTAT.Cell2.serialNumber[i] = param_data[i];
+    read_eeprom(0x0080, param_data, 24); //Retreiving Parameters
+    for (uint8_t i = 0; i < 24; i++)
+        BATTSTAT.Cell3.serialNumber[i] = param_data[i];
+
+    read_eeprom(0x00A0, param_data, 8); //Retreiving Parameters
+    BATTSTAT.Cell0.SoC = ((param_data[0] << 8) | param_data[1]);
+    BATTSTAT.Cell1.SoC = ((param_data[2] << 8) | param_data[3]);
+    BATTSTAT.Cell2.SoC = ((param_data[4] << 8) | param_data[5]);
+    BATTSTAT.Cell3.SoC = ((param_data[6] << 8) | param_data[7]);
+    
 }
 
 void c_FlashManager::write_eeprom(uint16_t mem_addr, uint8_t *data, size_t len)
@@ -53,11 +73,53 @@ void c_FlashManager::updateParam()
     param_data[6] = BATTSTAT.calibrationAoPGain;
 
     write_eeprom(0x0000, param_data, 8);
+
+    for (uint8_t i = 0; i < 24; i++)
+        param_data[i] = BATTSTAT.Cell0.serialNumber[i];
+    write_eeprom(0x0020, param_data, 24);
+
+    for (uint8_t i = 0; i < 24; i++)
+        param_data[i] = BATTSTAT.Cell1.serialNumber[i];
+    write_eeprom(0x0040, param_data, 24);
+
+    for (uint8_t i = 0; i < 24; i++)
+        param_data[i] = BATTSTAT.Cell2.serialNumber[i];
+    write_eeprom(0x0060, param_data, 24);
+
+    for (uint8_t i = 0; i < 24; i++)
+        param_data[i] = BATTSTAT.Cell3.serialNumber[i];
+    write_eeprom(0x0080, param_data, 24);
+    
+    param_data[0] = (BATTSTAT.Cell0.SoC >> 8) & 0xFF;
+    param_data[1] = BATTSTAT.Cell0.SoC & 0xFF;
+    param_data[2] = (BATTSTAT.Cell0.SoC >> 8) & 0xFF;
+    param_data[3] = BATTSTAT.Cell0.SoC & 0xFF;
+    param_data[4] = (BATTSTAT.Cell0.SoC >> 8) & 0xFF;
+    param_data[5] = BATTSTAT.Cell0.SoC & 0xFF;
+    param_data[6] = (BATTSTAT.Cell0.SoC >> 8) & 0xFF;
+    param_data[7] = BATTSTAT.Cell0.SoC & 0xFF;
+    write_eeprom(0x00A0, param_data, 8);
 }
 
 void c_FlashManager::dumpEEPROM()
 {
-    read_eeprom(0x0000, param_data, 8); //Retreiving Parameters
-    printf("EEPROM : %02X %02X %02X %02X %02X %02X %02X %02X\n", param_data[0], param_data[1], param_data[2], param_data[3], 
-                                                                param_data[4], param_data[5], param_data[6], param_data[7]);
+    read_eeprom(0x0000, param_data, 24); //Retreiving Parameters
+    printf("EEPROM :\n");
+    for (uint8_t i = 0; i < 24; i++)
+        printf("%02X ", param_data[i]);
+    read_eeprom(0x0020, param_data, 24); //Retreiving Parameters
+    printf("\n");
+    for (uint8_t i = 0; i < 24; i++)
+        printf("%02X ", param_data[i]);
+    read_eeprom(0x0040, param_data, 24); //Retreiving Parameters
+    printf("\n");
+    for (uint8_t i = 0; i < 24; i++)
+        printf("%02X ", param_data[i]);
+    read_eeprom(0x0060, param_data, 24); //Retreiving Parameters
+    printf("\n");
+    for (uint8_t i = 0; i < 24; i++)
+        printf("%02X ", param_data[i]);
+    printf("\n");
+    for (uint8_t i = 0; i < 8; i++)
+        printf("%02X ", param_data[i]);
 }

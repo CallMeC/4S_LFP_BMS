@@ -19,7 +19,7 @@ class c_FlashManager
         void read_eeprom(uint16_t mem_addr, uint8_t *data, size_t len);
         void updateParam();
         void dumpEEPROM();
-        uint8_t param_data[8];
+        uint8_t param_data[104];
 };
 
 #endif

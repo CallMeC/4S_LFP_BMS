@@ -1,6 +1,7 @@
 #define __INSTANCE__
 #include "appVariable.h"
 #undef __INSTANCE__
+#include <string.h>
 
 int main()
 {
@@ -56,14 +57,43 @@ int main()
                     uartHandler.UART_FLAG_USB = 0;
                     break;   
                 case 0x24:  //Verbose
-                    printf("VERBOSE ENABLED\n");
+                    if (!VERBOSE_ENABLED) printf("VERBOSE ENABLED\n");
+                    else printf("VERBOSE DISABLED\n");
                     VERBOSE_ENABLED = !VERBOSE_ENABLED;
-                    //I2C_0.Scan(i2c0);
-                    //FLASHMGR.readFlash();
-                    //FLASHMGR.dumpEEPROM();
-                    
                     uartHandler.UART_FLAG_USB = 0;
                     break;   
+                
+                case 0x25:  //ADC Cells
+                    printf("OCV Calc\n");
+                    //I2C_0.Scan(i2c0);
+                    /*printf("Cell 1 : %u V\n", BATTSTAT.Cell0.Voltage);
+                    printf("Cell 2 : %u V\n", BATTSTAT.Cell1.Voltage);
+                    printf("Cell 3 : %u V\n", BATTSTAT.Cell2.Voltage);
+                    printf("Cell 4 : %u V\n", BATTSTAT.Cell3.Voltage);*/
+                    BATTSTAT.Cell0.SoC = BATTSTAT.Cell0.estimateSoCFromVoltage(BATTSTAT.Cell0.Voltage/1000.0)*10;
+                    BATTSTAT.Cell1.SoC = BATTSTAT.Cell1.estimateSoCFromVoltage(BATTSTAT.Cell1.Voltage/1000.0)*10;
+                    BATTSTAT.Cell2.SoC = BATTSTAT.Cell2.estimateSoCFromVoltage(BATTSTAT.Cell2.Voltage/1000.0)*10;
+                    BATTSTAT.Cell3.SoC = BATTSTAT.Cell3.estimateSoCFromVoltage(BATTSTAT.Cell3.Voltage/1000.0)*10;
+                    //FLASHMGR.dumpEEPROM();
+                    FLASHMGR.updateParam();
+                    uartHandler.UART_FLAG_USB = 0;
+                    break;
+                
+                case 0x26:  //Cells SN
+                    printf("\n---\n");
+                    BATTSTAT.cellNbrVMax.setBypassState(false);
+                    BYPASS_ENABLED = !BYPASS_ENABLED;
+                    if (!BYPASS_ENABLED) printf("BYPASS ENABLED\n");
+                    else printf("BYPASS DISABLED\n");
+                    /*FLASHMGR.dumpEEPROM();
+                    memcpy(BATTSTAT.Cell0.serialNumber, "02YCB65117400J89C0000001", 24);
+                    memcpy(BATTSTAT.Cell1.serialNumber, "02YCB65117400J89C0000002", 24);
+                    memcpy(BATTSTAT.Cell2.serialNumber, "02YCB65117400J89C0000003", 24);
+                    memcpy(BATTSTAT.Cell3.serialNumber, "02YCB65117400J89C0000004", 24);
+                    FLASHMGR.updateParam();*/
+                    uartHandler.UART_FLAG_USB = 0;
+                    break;
+
                 default:
                     //printf("UNKNOWN COMMAND %02X\n", BufferRxUSB[0]);
                     uartHandler.UART_FLAG_USB = 0;
@@ -73,18 +103,35 @@ int main()
     }
 }
 
-bool timer_callback(repeating_timer_t *rt)
+bool timer_1000ms_callback(repeating_timer_t *rt)
 {
     IOManager.callBack();
     IOManager.mainLoop();
     IO_OPERATION = UPDATE_CURRENT;
-    BATTSTAT.randomVal();
+    //BATTSTAT.randomVal();
     BATTSTAT.synthesisPack();
     //BATTSTAT.displayVal();
     if (VERBOSE_ENABLED) BATTSTAT.sendGUIVal();
 
     // Read flash procedure
     //FLASHMGR.writeFlash();
+
+    return true;
+}
+
+bool timer_400ms_callback(repeating_timer_t *rt)
+{
+    IOManager.cells_update();
+    IOManager.mainLoop();
+    IO_OPERATION = READ_CELLS;
+    //printf("BATTSTAT.balancingCounter %u\n", BATTSTAT.balancingCounter);
+    if (BATTSTAT.balancingCounter++ > 200)
+        BATTSTAT.balancingEnabled = 0; //No Bypass for a while until good measurements
+    if (BATTSTAT.balancingCounter > 250)
+    {
+        BATTSTAT.balancingCounter = 0;
+        BATTSTAT.balancingEnabled = 1;
+    }
 
     return true;
 }

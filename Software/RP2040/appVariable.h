@@ -28,6 +28,7 @@
 #endif
 
 EXT_APP_DATA uint8_t VERBOSE_ENABLED;
+EXT_APP_DATA uint8_t BYPASS_ENABLED;
 EXT_APP_DATA uint32_t BMS_SERIAL_NUMBER;    //Type (04) - Revision (02) - Batch (01) - SN (01)
 
 
@@ -36,7 +37,8 @@ EXT_APP_DATA c_IO_Manager IOManager;
 EXT_APP_DATA uint8_t IO_OPERATION;
 EXT_APP_DATA uint16_t IO_OPERATION_PARAM;
 
-EXT_APP_DATA bool timer_callback(repeating_timer_t *rt);
+EXT_APP_DATA bool timer_1000ms_callback(repeating_timer_t *rt);
+EXT_APP_DATA bool timer_400ms_callback(repeating_timer_t *rt);
 
 //UART
 EXT_APP_DATA c_uartHandler uartHandler;
@@ -48,6 +50,8 @@ EXT_APP_DATA void ext_callback_uart_rx();
 //I2C
 EXT_APP_DATA c_I2C I2C_0;
 EXT_APP_DATA c_MCP3424 ADC_0;
+EXT_APP_DATA c_MCP3424 ADC_1;
+EXT_APP_DATA uint8_t ADC_IN_USE;
 
 //Batt Stats
 EXT_APP_DATA c_battStats BATTSTAT;
@@ -69,3 +73,8 @@ EXT_APP_DATA TemperatureFilter tempFilterNTC3;
 EXT_APP_DATA TemperatureFilter tempFilterNTC4;
 
 EXT_APP_DATA CurrentFilter currentFilter;
+
+EXT_APP_DATA VoltageFilter voltFilterC1;
+EXT_APP_DATA VoltageFilter voltFilterC2;
+EXT_APP_DATA VoltageFilter voltFilterC3;
+EXT_APP_DATA VoltageFilter voltFilterC4;

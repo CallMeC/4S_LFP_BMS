@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include "appVariable.h"
+#include "time.h"
 
 c_Cell::c_Cell()
 {
@@ -18,6 +19,9 @@ c_Cell::c_Cell()
     IMC                         = 0;
     IMD                         = 0;
     BypassState                 = false;
+
+    current_prev = 0;
+    last_update_time = time(nullptr);
 
     state                       = OFF;
 
@@ -189,4 +193,78 @@ const char* c_Cell::getStateString() const
         default:
             return "UNKNOWN";
     }
+}
+
+void c_Cell::updateSoC(double current)
+{   
+    time_t current_time = time(nullptr); // Temps actuel
+    double delta_time = difftime(current_time, last_update_time) / 3600.0; // Convertir en heures
+
+    // Calcul de la charge ajoutée/retirée
+    double delta_q = current * delta_time;
+    //printf("Delta Q : %.3f | Current : %.3f\n", delta_q, current);
+    // Mise à jour du SoC
+    SoC += (delta_q / CELL_CAPA_AH) * 100.0; 
+
+    // Gestion des limites du SoC
+    if (SoC > 100.0) SoC = 100.0;
+    if (SoC < 0.0) SoC = 0.0;
+
+    // Mise à jour du temps et du courant
+    last_update_time = current_time;
+    current_prev = current;
+}
+
+float c_Cell::estimateSoCFromVoltage(double pvoltage)
+{
+    std::vector<float> f_Map_LFP_Soc_Voltage = {
+    2.65,   0.0,   // 0% SoC correspond à 2.65V
+    2.80,   5.0,   // 5% SoC correspond à 2.80V
+    2.95,  10.0,   // 10% SoC correspond à 2.95V
+    3.05,  15.0,   // 15% SoC correspond à 3.05V
+    3.15,  20.0,   // 20% SoC correspond à 3.15V
+    3.20,  25.0,   // 25% SoC correspond à 3.20V
+    3.25,  30.0,   // 30% SoC correspond à 3.25V
+    3.28,  35.0,   // 35% SoC correspond à 3.28V
+    3.30,  40.0,   // 40% SoC correspond à 3.30V
+    3.32,  45.0,   // 45% SoC correspond à 3.32V
+    3.34,  50.0,   // 50% SoC correspond à 3.34V
+    3.36,  55.0,   // 55% SoC correspond à 3.36V
+    3.38,  60.0,   // 60% SoC correspond à 3.38V
+    3.40,  65.0,   // 65% SoC correspond à 3.40V
+    3.42,  70.0,   // 70% SoC correspond à 3.42V
+    3.44,  75.0,   // 75% SoC correspond à 3.44V
+    3.46,  80.0,   // 80% SoC correspond à 3.46V
+    3.48,  85.0,   // 85% SoC correspond à 3.48V
+    3.50,  90.0,   // 90% SoC correspond à 3.50V
+    3.53,  95.0,   // 95% SoC correspond à 3.53V
+    3.60, 100.0    // 100% SoC correspond à 3.60V
+};
+
+
+    int size = f_Map_LFP_Soc_Voltage.size();
+    
+    // Si la tension est en dehors des bornes du tableau, retourner les valeurs aux limites
+    if (pvoltage <= f_Map_LFP_Soc_Voltage[0]) {
+        return f_Map_LFP_Soc_Voltage[1];
+    }
+    if (pvoltage >= f_Map_LFP_Soc_Voltage[size - 2]) {
+        return f_Map_LFP_Soc_Voltage[size - 1];
+    }
+
+    // Parcours du tableau pour trouver l'intervalle où se situe la tension
+    for (int i = 0; i < size - 2; i += 2) {
+        float v1 = f_Map_LFP_Soc_Voltage[i];
+        float soc1 = f_Map_LFP_Soc_Voltage[i + 1];
+        float v2 = f_Map_LFP_Soc_Voltage[i + 2];
+        float soc2 = f_Map_LFP_Soc_Voltage[i + 3];
+
+        if (pvoltage >= v1 && pvoltage <= v2) {
+            // Interpolation linéaire entre les deux points
+            float soc = soc1 + (pvoltage - v1) * (soc2 - soc1) / (v2 - v1);
+            return soc;
+        }
+    }
+
+    return 0.0; // Valeur par défaut (ne devrait jamais être atteinte)
 }

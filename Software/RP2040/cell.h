@@ -3,6 +3,7 @@
 
 #include "pico/stdlib.h"
 #include <stdio.h>
+#include "time.h"
 
 //Operating Areas of the Cell
 #define ZONE_BLACK          0
@@ -52,6 +53,9 @@ class c_Cell
         uint16_t IMD;           //A Maximum Dynamic Discharge Current
         uint16_t IMR;           //A Maximum Dynamic Regeneration Current
         uint16_t IMC;           //A Maximum Dynamic Charge Current
+        char serialNumber[24];  //Serial number on the cell
+        double current_prev = 0;
+        time_t last_update_time;
         
 
         CellState state;        // Cell state
@@ -79,6 +83,8 @@ class c_Cell
         void checkCell();
         void displayCell();
         void IMDRCcheck();
+        void updateSoC(double current);
+        float estimateSoCFromVoltage(double pvoltage);
 
           // Methods to manage cell state
         void setState(CellState newState);

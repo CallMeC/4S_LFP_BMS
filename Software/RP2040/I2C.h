@@ -15,8 +15,8 @@ class c_I2C
 {
     public:
         c_I2C();
-        void sys_i2c_rbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, uint8_t* buf, size_t len);
-        void sys_i2c_wbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, const uint8_t* buf, size_t len);
+        int32_t sys_i2c_rbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, uint8_t* pBuf, uint32_t len);
+        int32_t sys_i2c_wbuf_reg(i2c_inst_t* i2c, uint8_t addr, uint8_t reg, uint8_t* pBuf, uint32_t len);
         void Init();
         void Scan(i2c_inst_t* i2c);
 };

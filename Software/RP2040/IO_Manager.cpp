@@ -61,8 +61,12 @@ void c_IO_Manager::GPIO_init()
 void c_IO_Manager::bootfinished()
 {
     ImaxValue = (0.066 / BATTSTAT.calibrationShuntValue)*1000000;
-    static repeating_timer_t timer;
-    add_repeating_timer_ms(500, &timer_callback, NULL, &timer);
+    printf("Imax : %u\n", ImaxValue);
+    static repeating_timer_t timer_1000ms;
+    static repeating_timer_t timer_400ms;
+    add_repeating_timer_ms(500, &timer_1000ms_callback, NULL, &timer_1000ms);
+    sleep_ms(250);
+    add_repeating_timer_ms(500, &timer_400ms_callback, NULL, &timer_400ms);
     LED_MICRO_STATE = 0;
 }
 
@@ -72,6 +76,7 @@ void c_IO_Manager::peripheralsInit()
     I2C_0.Init();
 
     ADC_0.Init(0x6B, I2C_0);
+    ADC_1.Init(0x69, I2C_0);
     FMGR_NAME.Init(0x50, I2C_0);
 }
 
@@ -88,16 +93,61 @@ void c_IO_Manager::mainLoop()
             BATTSTAT.Cell1.Temperature = TEMP_TO_DEG_C(rawTemp2);
             BATTSTAT.Cell2.Temperature = TEMP_TO_DEG_C(rawTemp3);
             BATTSTAT.Cell3.Temperature = TEMP_TO_DEG_C(rawTemp1);
+            BATTSTAT.Cell0.Voltage = (IOManager.rawVCell1 - IOManager.rawVCell2)*1000;
+            BATTSTAT.Cell1.Voltage = (IOManager.rawVCell2 - IOManager.rawVCell3)*1000;
+            BATTSTAT.Cell2.Voltage = (IOManager.rawVCell3 - IOManager.rawVCell4)*1000;
+            BATTSTAT.Cell3.Voltage = IOManager.rawVCell4*1000;
             break;
         
         case UPDATE_CURRENT:
             //printf("ADC PTS : %u\n", adc_read());
             //330A - 4096 pts
-            BATTSTAT.IShunt = ImaxValue/4096*adc_read();   //Conversion 12-bits -> Amps
+            BATTSTAT.IShunt = ImaxValue/4096*adc_read()*100;   //Conversion 12-bits -> Amps
+            
+            //BATTSTAT.Cell0.updateSoC(BATTSTAT.IShunt);
+            //BATTSTAT.Cell1.SoC = BATTSTAT.Cell0.SoC;
+            //BATTSTAT.Cell2.SoC = BATTSTAT.Cell0.SoC;
+            //BATTSTAT.Cell3.SoC = BATTSTAT.Cell0.SoC;
+            BATTSTAT.Cell0.SoC = BATTSTAT.Cell0.estimateSoCFromVoltage(BATTSTAT.Cell0.Voltage/1000.0)*10;
+            BATTSTAT.Cell1.SoC = BATTSTAT.Cell1.estimateSoCFromVoltage(BATTSTAT.Cell1.Voltage/1000.0)*10;
+            BATTSTAT.Cell2.SoC = BATTSTAT.Cell2.estimateSoCFromVoltage(BATTSTAT.Cell2.Voltage/1000.0)*10;
+            BATTSTAT.Cell3.SoC = BATTSTAT.Cell3.estimateSoCFromVoltage(BATTSTAT.Cell3.Voltage/1000.0)*10;
             break;
+        
+        case READ_CELLS:
+            if (ADC_IN_USE == 1) return;
+            ADC_IN_USE = 1;
+            setBalancingC1(false); setBalancingC2(false); setBalancingC3(false); setBalancingC4(false);
+            //if (BATTSTAT.balancingState != 0x00) return;    //Can not measure while balancing
+            switch(CELLS_READ_STATE)
+            {
+                case READ_CELL_1:
+                    rawVCell3 = ADC_1.readADC(CH4_HEX)*4.096/262143.0*GAIN_CELL_3;
+                    rawVCell3 = voltFilterC1.addVoltage(rawVCell3);
+                    ADC_IN_USE = 0;
+                    break;
+                case READ_CELL_2:
+                    rawVCell4 = ADC_1.readADC(CH1_HEX)*4.096/262143.0*GAIN_CELL_4;//ok
+                    rawVCell4 = voltFilterC2.addVoltage(rawVCell4);
+                    ADC_IN_USE = 0;
+                    break;
+                case READ_CELL_3:
+                    rawVCell1 = ADC_1.readADC(CH2_HEX)*4.096/262143.0*GAIN_CELL_1;
+                    rawVCell1 = voltFilterC3.addVoltage(rawVCell1);
+                    ADC_IN_USE = 0;
+                    break;
+                case READ_CELL_4:
+                    rawVCell2 = ADC_1.readADC(CH3_HEX)*4.096/262143.0*GAIN_CELL_2;//ok
+                    rawVCell2 = voltFilterC4.addVoltage(rawVCell2);
+                    ADC_IN_USE = 0;
+                    break;
+                default:
+                    break;
+            }
         
         case READ_ADC:
             //printf("READ ADC\n");
+            if (ADC_IN_USE == 1) return;
             switch(ADC_READ_STATE)
             {
             case READ_NTC_1:
@@ -142,6 +192,13 @@ void c_IO_Manager::callBack()
     IO_OPERATION = READ_ADC;
     ADC_READ_STATE++; if (ADC_READ_STATE > 4) ADC_READ_STATE = 1;
     //printf("ADC_STATE : %u\n", ADC_READ_STATE);
+}
+
+void c_IO_Manager::cells_update()
+{
+    IO_OPERATION = READ_CELLS;
+    CELLS_READ_STATE++; if (CELLS_READ_STATE > 4) CELLS_READ_STATE = 1;
+    //printf("CELLS_READ_STATE : %u\n", CELLS_READ_STATE);
 }
 
 void c_IO_Manager::setBalancingC1(bool state)
@@ -216,6 +273,29 @@ double CurrentFilter::addCurrent(double newCurrent)
 {
     // Ajouter le nouveau courant dans le buffer
     buffer[index] = newCurrent;
+    index = (index + 1) % BUFFER_SIZE;
+    if (count < BUFFER_SIZE)
+        count++;
+
+    // Calculer la moyenne des valeurs dans le buffer
+    double sum = 0.0;
+    for (int i = 0; i < count; ++i)
+        sum += buffer[i];
+
+    return sum / count;
+}
+
+VoltageFilter::VoltageFilter() : index(0), count(0)
+{
+    // Initialiser le buffer avec des valeurs nulles
+    for (int i = 0; i < BUFFER_SIZE; ++i)
+        buffer[i] = 0.0;
+}
+
+double VoltageFilter::addVoltage(double newVoltage)
+{
+    // Ajouter le nouveau courant dans le buffer
+    buffer[index] = newVoltage;
     index = (index + 1) % BUFFER_SIZE;
     if (count < BUFFER_SIZE)
         count++;
