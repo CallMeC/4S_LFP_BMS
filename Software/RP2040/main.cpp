@@ -83,7 +83,7 @@ int main()
                     printf("\n---\n");
                     BATTSTAT.cellNbrVMax.setBypassState(false);
                     BYPASS_ENABLED = !BYPASS_ENABLED;
-                    if (!BYPASS_ENABLED) printf("BYPASS ENABLED\n");
+                    if (BYPASS_ENABLED) printf("BYPASS ENABLED\n");
                     else printf("BYPASS DISABLED\n");
                     /*FLASHMGR.dumpEEPROM();
                     memcpy(BATTSTAT.Cell0.serialNumber, "02YCB65117400J89C0000001", 24);

@@ -60,6 +60,15 @@ class c_IO_Manager
         void setBalancingC3(bool state);
         void setBalancingC4(bool state);
         double calculateTemperature(double v_out);
+        void autoWakeUpEnd();
+    
+    private:
+        double gain_cell_1;
+        double gain_cell_2;
+        double gain_cell_3;
+        double gain_cell_4;
+        uint8_t loopCounterAlive;
+        double updateResistance(double initialResistance, double temperature, double referenceTemperature = 25.0, double ppm = 100.0);
 };
 
 class CurrentFilter
@@ -91,7 +100,7 @@ public:
 class VoltageFilter
 {
 private:
-    static const int BUFFER_SIZE = 2;
+    static const int BUFFER_SIZE = 5;
     double buffer[BUFFER_SIZE];
     int index;
     int count;

@@ -148,8 +148,8 @@ void c_battStats::synthesisPack()
   if (V_Delta_Cell_Max > DELTA_U_MAX) //A cell is too charged compared to others, if we are in charge or standby we should balance it
   {
     IOManager.setBalancingC1(false); IOManager.setBalancingC2(false); IOManager.setBalancingC3(false); IOManager.setBalancingC4(false);
-    if (balancingEnabled == 0) {printf("Balancing Disabled\n"); balancingState = 0x00; return;}
-    if (BYPASS_ENABLED == 0) { printf("User Balancing Disabled\n"); balancingState = 0x00; return; }
+    if (balancingEnabled == 0) {/*printf("Balancing Disabled\n");*/ balancingState = 0x00; return;}
+    if (BYPASS_ENABLED == 0) { /*printf("User Balancing Disabled\n");*/ balancingState = 0x00; return; }
     if (DEG_C_TO_TEMP(cellNbrVMax.Temperature) < YELLOW_TEMP_HIGH) //On fait attention à ne pas trop chauffer
     {
       cellNbrVMax.setBypassState(true);

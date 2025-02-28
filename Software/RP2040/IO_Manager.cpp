@@ -14,7 +14,12 @@ void c_IO_Manager::GPIO_init()
 {
     VERBOSE_ENABLED = 0;
     ADC_READ_STATE = 0;
-    
+
+    gain_cell_1 = 8.3320;    //Defaults values, To Be updated depending on temperature
+    gain_cell_2 = 6.0250;
+    gain_cell_3 = 6.0160;
+    gain_cell_4 = 2.0035;
+    loopCounterAlive = 0;
 
     gpio_init(RESET);
     gpio_init(OUTPUT_LED);
@@ -97,13 +102,18 @@ void c_IO_Manager::mainLoop()
             BATTSTAT.Cell1.Voltage = (IOManager.rawVCell2 - IOManager.rawVCell3)*1000;
             BATTSTAT.Cell2.Voltage = (IOManager.rawVCell3 - IOManager.rawVCell4)*1000;
             BATTSTAT.Cell3.Voltage = IOManager.rawVCell4*1000;
+
+            //Resistors Gain update
+            /*gain_cell_1 = (updateResistance(220000.0, rawTemp4) + updateResistance(30000.0, rawTemp4)) / updateResistance(30000.0, rawTemp4);
+            gain_cell_2 = (updateResistance(50000.0, 25.0) + updateResistance(10000.0, 25.0)) / updateResistance(10000.0, 25.0);
+            gain_cell_3 = (updateResistance(50000.0, 25.0) + updateResistance(10000.0, 25.0)) / updateResistance(10000.0, 25.0);
+            gain_cell_4 = (2*(updateResistance(68000.0, rawTemp1)) / updateResistance(68000.0, rawTemp1));*/
             break;
         
         case UPDATE_CURRENT:
             //printf("ADC PTS : %u\n", adc_read());
             //330A - 4096 pts
             BATTSTAT.IShunt = ImaxValue/4096*adc_read()*100;   //Conversion 12-bits -> Amps
-            
             //BATTSTAT.Cell0.updateSoC(BATTSTAT.IShunt);
             //BATTSTAT.Cell1.SoC = BATTSTAT.Cell0.SoC;
             //BATTSTAT.Cell2.SoC = BATTSTAT.Cell0.SoC;
@@ -117,27 +127,27 @@ void c_IO_Manager::mainLoop()
         case READ_CELLS:
             if (ADC_IN_USE == 1) return;
             ADC_IN_USE = 1;
+            //Can not measure while balancing, therefore disabling it during reading
             setBalancingC1(false); setBalancingC2(false); setBalancingC3(false); setBalancingC4(false);
-            //if (BATTSTAT.balancingState != 0x00) return;    //Can not measure while balancing
             switch(CELLS_READ_STATE)
             {
                 case READ_CELL_1:
-                    rawVCell3 = ADC_1.readADC(CH4_HEX)*4.096/262143.0*GAIN_CELL_3;
+                    rawVCell3 = ADC_1.readADC(CH4_HEX)*4.096/262143.0*gain_cell_3;
                     rawVCell3 = voltFilterC1.addVoltage(rawVCell3);
                     ADC_IN_USE = 0;
                     break;
                 case READ_CELL_2:
-                    rawVCell4 = ADC_1.readADC(CH1_HEX)*4.096/262143.0*GAIN_CELL_4;//ok
+                    rawVCell4 = ADC_1.readADC(CH1_HEX)*4.096/262143.0*gain_cell_4;//ok
                     rawVCell4 = voltFilterC2.addVoltage(rawVCell4);
                     ADC_IN_USE = 0;
                     break;
                 case READ_CELL_3:
-                    rawVCell1 = ADC_1.readADC(CH2_HEX)*4.096/262143.0*GAIN_CELL_1;
+                    rawVCell1 = ADC_1.readADC(CH2_HEX)*4.096/262143.0*gain_cell_1;
                     rawVCell1 = voltFilterC3.addVoltage(rawVCell1);
                     ADC_IN_USE = 0;
                     break;
                 case READ_CELL_4:
-                    rawVCell2 = ADC_1.readADC(CH3_HEX)*4.096/262143.0*GAIN_CELL_2;//ok
+                    rawVCell2 = ADC_1.readADC(CH3_HEX)*4.096/262143.0*gain_cell_2;//ok
                     rawVCell2 = voltFilterC4.addVoltage(rawVCell2);
                     ADC_IN_USE = 0;
                     break;
@@ -172,6 +182,8 @@ void c_IO_Manager::mainLoop()
                 rawTemp4 = calculateTemperature(ADC_0.readADC(CH4_HEX)*4.096/262143.0);
                 //printf("T4 : %.2f\n", rawTemp4);
                 rawTemp4 = tempFilterNTC4.addTemperature(rawTemp4);
+                if (loopCounterAlive++ == 3)
+                    autoWakeUpEnd();
                 break;
             
             default:
@@ -184,6 +196,12 @@ void c_IO_Manager::mainLoop()
     }
     IO_OPERATION = 0;   
 }
+
+void c_IO_Manager::autoWakeUpEnd()
+{
+    gpio_put(TIMER_DONE, 1);    //Harakiri
+}
+
 
 void c_IO_Manager::callBack()
 {
@@ -237,6 +255,17 @@ double c_IO_Manager::calculateTemperature(double v_out)
     if ((T_Celsius < -25.0) || (T_Celsius > 125.0))    //Temperature error, maybe measurement
         T_Celsius = -250.0; //Not ambiguous
     return T_Celsius;
+}
+
+double c_IO_Manager::updateResistance(double initialResistance, double temperature, double referenceTemperature, double ppm)
+{
+    // Coefficient de température en ppm/°C
+    double alpha = ppm * 1e-6;  // Conversion de ppm en ppm/°C
+    double deltaT = temperature - referenceTemperature;
+
+    // Calcul de la résistance mise à jour
+    double updatedResistance = initialResistance * (1 + alpha * deltaT);
+    return updatedResistance;
 }
 
 TemperatureFilter::TemperatureFilter() : index(0), count(0)
