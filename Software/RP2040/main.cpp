@@ -10,6 +10,7 @@ int main()
     printf("START\n");
     IOManager.GPIO_init();
     uartHandler._uart_init();
+    canHandler._can_init();
     IOManager.peripheralsInit();
     IOManager.bootfinished();
 
@@ -115,7 +116,7 @@ bool timer_1000ms_callback(repeating_timer_t *rt)
 
     // Read flash procedure
     //FLASHMGR.writeFlash();
-
+    canHandler._can_send();
     return true;
 }
 

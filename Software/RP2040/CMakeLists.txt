@@ -12,7 +12,7 @@ set(TARGET_NAME BMS_Firmware)
 
 add_executable(${TARGET_NAME} main.cpp IO_Manager.cpp uartHandler.cpp I2C.cpp
                               MCP3424.cpp battStats.cpp flashManager.cpp faultsManager.cpp
-                              cell.cpp systemCore.cpp)
+                              cell.cpp systemCore.cpp can2040.c can2040.h canHandler.cpp)
 
 target_link_libraries(${TARGET_NAME}
         pico_stdlib
@@ -24,6 +24,7 @@ target_link_libraries(${TARGET_NAME}
         hardware_flash
         hardware_sync
         hardware_irq
+        cmsis_core
         )
 
 pico_enable_stdio_usb(${TARGET_NAME} 1)

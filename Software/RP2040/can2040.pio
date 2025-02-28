@@ -1,0 +1,183 @@
+// Reference code for rp2040 PIO handlers
+//
+// Copyright (C) 2022  Kevin O'Connor <kevin@koconnor.net>
+//
+// This file may be distributed under the terms of the GNU GPLv3 license.
+
+.program can2040
+
+// This is the main PIO code for the can2040 CANbus software.  The
+// code is convoluted due to space constraints of the PIO (a max of 32
+// instructions).
+
+// This implementation is designed to run at 32 times the bitrate.
+// The "cp=" comments in the code indicate the "clock phase" - which
+// ranges from 0 to 31 (32 is 0 again).  At "cp=0" a one to zero edge
+// is first detected, at "cp=26" is the sampling point, and "cp=31"
+// output changes are made (so that they are observed by "cp=32").
+
+// State machine "sync" code - clock and start/end of message signaling
+sync_recessive_edge:
+    jmp y--, sync_scan_edge     ; cp=31,33,35,37
+    jmp x--, sync_signal_sample ; cp=6
+public sync_found_end_of_message:
+    set x, 9                    ; cp=7
+sync_loop_end_of_message:
+    jmp pin sync_check_idle
+public sync_signal_start:
+    irq set 0
+sync_scan_edge:
+    jmp pin sync_recessive_edge ; cp=30,32,34,36
+public sync_entry:
+    irq clear 0                 ; cp=1
+sync_got_dominant:
+    set x, 9               [4]  ; cp=2
+sync_signal_sample:
+    set y, 3               [16] ; cp=7
+    irq set 4              [1]  ; cp=24
+    jmp pin sync_scan_edge [3]  ; cp=26
+    jmp sync_got_dominant  [3]  ; cp=30
+sync_check_idle:
+    jmp x-- sync_loop_end_of_message
+public sync_end:
+    ;jmp sync_signal_start      ; wrap based jump
+
+// State machine "rx" code - forward data to cpu
+public shared_rx_read:
+    wait 1 irq 4
+    in pins, 1                  ; cp=26
+public shared_rx_end:
+    ;jmp shared_rx_read         ; wrap based jump
+
+// State machine "match" code - raise "matched" signal on a raw bitstream match
+    mov y, isr                  ; cp=27
+    jmp x!=y match_load_next [1]; cp=28
+match_signal:
+    irq set 2                   ; cp=30
+public match_load_next:
+    in osr, 11                  ; load next_counter and bits into isr
+    in y, 20
+    mov y, osr
+match_check_next:
+    pull noblock                ; reload target_compare into x
+    mov x, osr
+    jmp y-- f2                  ; setup next_counter
+public tx_conflict:
+ f2:mov osr, y
+public match_end:
+    ;jmp shared_rx_read         ; wrap based jump
+
+// State machine "tx" code - write messages to bus
+public tx_got_recessive:
+    out x, 1                    ; cp=27
+    jmp pin tx_align            ; cp=28
+public tx_write_pin:
+    mov pins, x            [24] ; cp=31
+    jmp pin tx_got_recessive [2]; cp=24
+    jmp x-- tx_conflict         ; cp=27 On conflict, spin forever on dummy insn
+    out x, 1                    ; cp=28
+tx_align:
+    jmp tx_write_pin       [1]  ; cp=29
+
+
+//
+//  Setup code (reference only)
+//
+
+// Setup for "sync" state machine
+.program sm_sync_setup
+    set pindirs, 0
+    // CPU pushes 105 into tx fifo - to set OSR for alternative slow start mode
+    pull
+    ;jmp sync_got_dominant
+
+// Alternate code for sync_found_end_of_message when slow start needed
+.program sm_sync_alt_slow_start
+    mov x, osr             [1]
+
+// Setup for "rx" state machine
+.program sm_rx_setup
+    ;jmp shared_rx_read
+
+// Setup for "match" state machine
+.program sm_match_setup
+    set y, 0
+    mov osr, y
+    mov x, !y
+    ;jmp match_load_next
+
+// Setup for "tx" state machine
+.program sm_tx_setup
+    set pins, 1
+    set pindirs, 1
+
+// Transmit sequence for "tx" state machine
+.program sm_tx_transmit
+    // CPU first disables state machine execution
+    // CPU clears irq 2 and irq 3
+    // CPU then loads tx fifos with full (bitstuffed) message
+    set pins, 1
+    out x, 1
+    ;jmp tx_write_pin
+    wait 1 irq 0
+    // CPU then starts state machine execution
+
+// Transmit sequence for "tx" state machine ack injection
+.program sm_tx_ack
+    // CPU first disables state machine execution
+    // CPU clears irq 2 and irq 3
+    // CPU changes instruction at tx_loop from "out x, 1" to:
+    irq wait 3
+    // CPU then loads tx fifo with ack (single off bit)
+    set pins, 1
+    out x, 1
+    ;jmp tx_write_pin
+    wait 1 irq 2
+    // CPU then starts state machine execution
+    // CPU then loads match fifo with CRC/position sequence to check
+
+
+//
+// Reference "sync" state machine without code size reduction hacks
+//
+
+.program reference_sync_sm
+
+sync_got_dominant:
+    set x, 9
+    jmp sync_signal_sample
+
+sync_signal_sample:
+    irq set 4
+    jmp pin sync_scan_edge
+    jmp sync_got_dominant
+
+sync_scan_edge:
+    set y, 3
+sync_loop_scan_edge:
+    jmp pin sync_recessive_edge
+    jmp sync_got_dominant
+sync_recessive_edge:
+    jmp y--, sync_loop_scan_edge
+    jmp x--, sync_signal_sample
+    jmp sync_found_end_of_message
+
+sync_found_end_of_message:
+    set x, 8
+sync_loop_end_of_message:
+    jmp pin sync_check_idle
+    jmp sync_signal_start
+sync_check_idle:
+    jmp x-- sync_loop_end_of_message
+    jmp sync_found_idle
+
+sync_found_idle:
+    irq set 0
+sync_loop_idle:
+    jmp pin sync_loop_idle
+    jmp sync_signal_start
+
+sync_signal_start:
+    irq set 0
+    irq clear 0
+    jmp sync_got_dominant

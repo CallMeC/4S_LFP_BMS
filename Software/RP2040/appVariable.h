@@ -4,15 +4,19 @@
 #include "MCP3424.h"
 #include "MCP4551.h"*/
 #include "pico/stdlib.h"
+#include "pico/binary_info.h"
 #include <stdio.h>
+#include <stdint.h>
 #include "IO_Manager.h"
 #include "uartHandler.h"
+#include "canHandler.h"
 #include "I2C.h"
 #include "MCP3424.h"
 #include "battStats.h"
 #include "flashManager.h"
 #include "faultsManager.h"
 #include "systemCore.h"
+#include "RP2040.h"
 
 #define SYS_VERS_MAJEUR         0
 #define SYS_VERS_MINEUR         1   // 0 à 99
@@ -46,6 +50,13 @@ EXT_APP_DATA uint8_t BufferRx[200];
 EXT_APP_DATA uint8_t BufferRxUSB[200];
 EXT_APP_DATA uint8_t BufferTx[200];
 EXT_APP_DATA void ext_callback_uart_rx();
+
+//CAN
+EXT_APP_DATA struct can2040 canBus;
+EXT_APP_DATA void PIOx_IRQHandler(void);
+EXT_APP_DATA void can2040_cb(struct can2040 *cd, uint32_t notify, struct can2040_msg *msg);
+EXT_APP_DATA can2040_msg frameToSend;
+EXT_APP_DATA c_canHandler canHandler;
 
 //I2C
 EXT_APP_DATA c_I2C I2C_0;
