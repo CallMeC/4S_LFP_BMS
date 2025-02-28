@@ -38,16 +38,17 @@ Nevertheless, it can communicate to a computer by UART through USB. This way we 
 
 QT C++ Programm to visualise BMS characteristics in real time.
 
-![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/76dbcbad-aa51-4397-b71e-6b40d7a2273c)
 
 Assembly View
 
 ![TOP_VIEW](https://github.com/user-attachments/assets/ef44eb45-9708-485b-be5c-602ac48da8d0)
+
 ![SIDE_VIEW](https://github.com/user-attachments/assets/3444f80f-d5fe-44f3-8984-06d90694113d)
 
 
 PCB Preview
 
+![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/76dbcbad-aa51-4397-b71e-6b40d7a2273c)
 ![Capture d'écran 2024-02-19 112637](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/953ecdad-eed0-418a-b597-118a0777cbf7)
 ![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/76dbcbad-aa51-4397-b71e-6b40d7a2273c)
 ![image](https://github.com/CallMeC/4S_LFP_BMS/assets/47334555/298e1745-1c2e-4b97-8dc4-2f3d7fb2bee3)
