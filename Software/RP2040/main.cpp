@@ -112,6 +112,7 @@ bool timer_1000ms_callback(repeating_timer_t *rt)
     //BATTSTAT.randomVal();
     BATTSTAT.synthesisPack();
     //BATTSTAT.displayVal();
+    canHandler._can_heartbeat();
     if (VERBOSE_ENABLED) BATTSTAT.sendGUIVal();
 
     // Read flash procedure
@@ -134,8 +135,12 @@ bool timer_400ms_callback(repeating_timer_t *rt)
         BATTSTAT.balancingEnabled = 1;
     }
 
+    canHandler.canTOCounter++;
+    if ((canHandler.canTOCounter > 4) && (IOManager.loopCounterAlive++ == 3))   //Time to die
+        IOManager.autoWakeUpEnd();
     return true;
 }
+
 
 void ext_callback_uart_rx()
 {

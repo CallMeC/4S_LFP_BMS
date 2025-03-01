@@ -182,8 +182,6 @@ void c_IO_Manager::mainLoop()
                 rawTemp4 = calculateTemperature(ADC_0.readADC(CH4_HEX)*4.096/262143.0);
                 //printf("T4 : %.2f\n", rawTemp4);
                 rawTemp4 = tempFilterNTC4.addTemperature(rawTemp4);
-                if (loopCounterAlive++ == 3)
-                    autoWakeUpEnd();
                 break;
             
             default:
@@ -199,6 +197,7 @@ void c_IO_Manager::mainLoop()
 
 void c_IO_Manager::autoWakeUpEnd()
 {
+    printf("HARAKIRI\n");
     gpio_put(TIMER_DONE, 1);    //Harakiri
 }
 

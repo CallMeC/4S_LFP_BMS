@@ -194,7 +194,6 @@ void c_battStats::displayVal()
 
 void c_battStats::sendGUIVal()
 {    
-  uint8_t stateValue = 0;
   if (state == c_Cell::CellState::CHARGE) stateValue = 1;
   if (state == c_Cell::CellState::DISCHARGE) stateValue = 2;
   if (state == c_Cell::CellState::STORAGE) stateValue = 3;

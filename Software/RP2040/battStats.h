@@ -10,7 +10,7 @@
 #define IMD_MAX         210 //A
 #define IMC_MAX         53  //A
 #define IMR_MAX         105 //A
-#define DELTA_U_MAX     20  //mV
+#define DELTA_U_MAX     5  //mV
 
 
 class c_battStats
@@ -85,6 +85,8 @@ class c_battStats
         uint8_t balancingCounter;
         c_Cell::CellState state;
 
+        uint8_t stateValue;
+
         uint8_t alarmN1;
         uint8_t alarmN2;
         uint8_t alarmN3;
@@ -93,13 +95,14 @@ class c_battStats
 
         uint8_t incomingByte[MAX_IN_LENGTH];
         uint8_t incomingByteCounter;
+        uint8_t cellNumberToU8(c_Cell cell);
     
     private:
         uint16_t min(uint16_t a, uint16_t b);
         uint16_t max(uint16_t a, uint16_t b);
         c_Cell whoMin(uint16_t Cell0Val, uint16_t Cell1Val, uint16_t Cell2Val, uint16_t Cell3Val);
         c_Cell whoMax(uint16_t Cell0Val, uint16_t Cell1Val, uint16_t Cell2Val, uint16_t Cell3Val);
-        uint8_t cellNumberToU8(c_Cell cell);
+        
 };
 
 #endif

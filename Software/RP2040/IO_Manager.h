@@ -61,13 +61,13 @@ class c_IO_Manager
         void setBalancingC4(bool state);
         double calculateTemperature(double v_out);
         void autoWakeUpEnd();
+        uint8_t loopCounterAlive;
     
     private:
         double gain_cell_1;
         double gain_cell_2;
         double gain_cell_3;
         double gain_cell_4;
-        uint8_t loopCounterAlive;
         double updateResistance(double initialResistance, double temperature, double referenceTemperature = 25.0, double ppm = 100.0);
 };
 
